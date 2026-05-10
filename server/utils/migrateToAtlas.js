@@ -2,10 +2,11 @@
  * Migration Script: Local MongoDB → MongoDB Atlas
  * Run: node server/utils/migrateToAtlas.js
  */
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
 const { MongoClient } = require('mongodb');
 
 const LOCAL_URI = 'mongodb://localhost:27017/traveloop';
-const ATLAS_URI = 'mongodb+srv://guptapraksh7878_db_user:Epw7IKkO9xpo37OA@cluster0.z5b4hw5.mongodb.net/traveloop?appName=Cluster0';
+const ATLAS_URI = process.env.MONGO_URI;
 
 async function migrate() {
   let localClient, atlasClient;
