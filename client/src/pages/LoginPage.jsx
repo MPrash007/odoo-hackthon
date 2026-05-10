@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Plane, MapPin, Sparkles } from 'lucide-react';
-import logoSvg from '../assets/logo.svg';
+import logoSvg from '../assets/plane logo.png';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -196,7 +196,6 @@ const LoginPage = () => {
                 <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#94a3b8', cursor: 'pointer' }}>
                   <input type="checkbox" style={{ accentColor: '#22D3EE', width: '14px', height: '14px' }} /> Remember me
                 </label>
-                <a href="#" style={{ fontSize: '12px', color: '#22D3EE', textDecoration: 'none', fontWeight: 500 }}>Forgot password?</a>
               </div>
 
               <motion.button

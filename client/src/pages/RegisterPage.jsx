@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Camera, User, Mail, Phone, MapPin, ArrowRight, Sparkles, Plane, Compass, Loader2 } from 'lucide-react';
-import logoSvg from '../assets/logo.svg';
+import { Camera, User, Mail, Phone, MapPin, ArrowRight, Sparkles, Plane, Compass, Loader2, Lock, Globe } from 'lucide-react';
+import logoSvg from '../assets/plane logo.png';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import axios from 'axios';
@@ -203,8 +203,20 @@ const RegisterPage = () => {
 
             <form onSubmit={handleSubmit}>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
-                <div><label style={labelStyle}>First Name *</label><input value={form.firstName} onChange={e => update('firstName', e.target.value)} className="input-field" placeholder="John" /></div>
-                <div><label style={labelStyle}>Last Name *</label><input value={form.lastName} onChange={e => update('lastName', e.target.value)} className="input-field" placeholder="Doe" /></div>
+                <div>
+                  <label style={labelStyle}>First Name *</label>
+                  <div style={{ position: 'relative' }}>
+                    <User style={iconStyle} />
+                    <input value={form.firstName} onChange={e => update('firstName', e.target.value)} className="input-field input-with-icon" placeholder="John" />
+                  </div>
+                </div>
+                <div>
+                  <label style={labelStyle}>Last Name *</label>
+                  <div style={{ position: 'relative' }}>
+                    <User style={iconStyle} />
+                    <input value={form.lastName} onChange={e => update('lastName', e.target.value)} className="input-field input-with-icon" placeholder="Doe" />
+                  </div>
+                </div>
               </div>
               <div style={{ marginBottom: '12px' }}>
                 <label style={labelStyle}>Email *</label>
@@ -215,13 +227,16 @@ const RegisterPage = () => {
               </div>
               <div style={{ marginBottom: '12px' }}>
                 <label style={labelStyle}>Password *</label>
-                <input type="password" value={form.password} onChange={e => update('password', e.target.value)} className="input-field" placeholder="Min 6 characters" />
+                <div style={{ position: 'relative' }}>
+                  <Lock style={iconStyle} />
+                  <input type="password" value={form.password} onChange={e => update('password', e.target.value)} className="input-field input-with-icon" placeholder="Min 6 characters" />
+                </div>
               </div>
               <div style={{ marginBottom: '12px' }}>
                 <label style={labelStyle}>Phone</label>
                 <div style={{ position: 'relative' }}>
                   <Phone style={iconStyle} />
-                  <input type="tel" value={form.phone} onChange={e => update('phone', e.target.value)} className="input-field input-with-icon" placeholder="+1 234 567 890" />
+                  <input type="tel" value={form.phone} onChange={e => update('phone', e.target.value)} className="input-field input-with-icon" placeholder="+91 9876543210" />
                 </div>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '12px' }}>
@@ -229,10 +244,16 @@ const RegisterPage = () => {
                   <label style={labelStyle}>City</label>
                   <div style={{ position: 'relative' }}>
                     <MapPin style={iconStyle} />
-                    <input value={form.city} onChange={e => update('city', e.target.value)} className="input-field input-with-icon" placeholder="New York" />
+                    <input value={form.city} onChange={e => update('city', e.target.value)} className="input-field input-with-icon" placeholder="Delhi" />
                   </div>
                 </div>
-                <div><label style={labelStyle}>Country</label><input value={form.country} onChange={e => update('country', e.target.value)} className="input-field" placeholder="USA" /></div>
+                <div>
+                  <label style={labelStyle}>Country</label>
+                  <div style={{ position: 'relative' }}>
+                    <Globe style={iconStyle} />
+                    <input value={form.country} onChange={e => update('country', e.target.value)} className="input-field input-with-icon" placeholder="INDIA" />
+                  </div>
+                </div>
               </div>
               <div style={{ marginBottom: '20px' }}>
                 <label style={labelStyle}>Travel interests (optional)</label>
@@ -259,6 +280,6 @@ const RegisterPage = () => {
 };
 
 const labelStyle = { display: 'block', fontSize: '12px', fontWeight: '600', color: '#cbd5e1', marginBottom: '6px' };
-const iconStyle = { position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', width: '15px', height: '15px', color: '#64748b', pointerEvents: 'none' };
+const iconStyle = { position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', width: '15px', height: '15px', color: '#64748b', pointerEvents: 'none', zIndex: 10 };
 
 export default RegisterPage;

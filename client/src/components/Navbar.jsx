@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { LayoutDashboard, Map, Users, Search, Bell, Menu, X, LogOut, User, Shield, Sparkles } from 'lucide-react';
-import logoSvg from '../assets/logo.svg';
+import logoSvg from '../assets/plane logo.png';
 import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
