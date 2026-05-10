@@ -23,6 +23,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API Routes
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/upload', require('./routes/uploadRoutes'));
 app.use('/api/trips', require('./routes/tripRoutes'));
 app.use('/api/itineraries', require('./routes/itineraryRoutes'));
 app.use('/api/cities', require('./routes/cityRoutes'));
@@ -31,6 +32,7 @@ app.use('/api/budget', require('./routes/budgetRoutes'));
 app.use('/api/checklists', require('./routes/checklistRoutes'));
 app.use('/api/notes', require('./routes/notesRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
 
 // Health check
 app.get('/api/health', (req, res) => {

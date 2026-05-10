@@ -11,6 +11,7 @@ const tripSchema = new mongoose.Schema({
   status: { type: String, enum: ['upcoming', 'ongoing', 'completed'], default: 'upcoming' },
   isPublic: { type: Boolean, default: false },
   totalBudget: { type: Number, default: 0 },
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 }, { timestamps: true });
 
 module.exports = mongoose.model('Trip', tripSchema);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Plus, Edit, Trash2, Calendar, MapPin } from 'lucide-react';
+import { FileText, Plus, Edit, Trash2, Calendar, MapPin, Sparkles } from 'lucide-react';
 import { notesService } from '../services/budgetService';
 import Modal from '../components/Modal';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -25,50 +25,160 @@ const TripNotesPage = () => {
   const handleSave = async () => {
     if (!form.title) return toast.error('Title required');
     try {
-      if (editing) { const updated = await notesService.updateNote(editing._id, form); setNotes(p => p.map(n => n._id === editing._id ? updated : n)); toast.success('Updated'); }
-      else { const note = await notesService.addNote(id, form); setNotes(p => [note, ...p]); toast.success('Added'); }
+      if (editing) {
+        const updated = await notesService.updateNote(editing._id, form);
+        setNotes(p => p.map(n => n._id === editing._id ? updated : n)); toast.success('Updated');
+      } else {
+        const note = await notesService.addNote(id, form);
+        setNotes(p => [note, ...p]); toast.success('Added');
+      }
       setModalOpen(false);
     } catch { toast.error('Failed'); }
   };
 
   const handleDelete = async (noteId) => {
     if (!window.confirm('Delete this note?')) return;
-    try { await notesService.deleteNote(noteId); setNotes(p => p.filter(n => n._id !== noteId)); toast.success('Deleted'); } catch { toast.error('Failed'); }
+    try { await notesService.deleteNote(noteId); setNotes(p => p.filter(n => n._id !== noteId)); toast.success('Deleted'); }
+    catch { toast.error('Failed'); }
   };
 
   const filtered = filter === 'all' ? notes : notes.filter(n => (filter === 'day' ? n.day : n.stop));
 
   if (loading) return <LoadingSpinner />;
 
-  return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-3xl mx-auto space-y-6 pb-10">
-      <div className="flex items-center justify-between"><h1 className="text-3xl font-bold text-white flex items-center gap-2"><FileText className="w-7 h-7 text-teal-400" />Trip Notes</h1>
-        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={openAdd} className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white text-sm font-semibold"><Plus className="w-4 h-4" />Add Note</motion.button>
-      </div>
-      <div className="flex gap-2">{['all', 'day', 'stop'].map(f => <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-all ${filter === f ? 'bg-teal-500/20 text-teal-400' : 'bg-white/5 text-slate-400'}`}>{f === 'all' ? 'All' : `By ${f}`}</button>)}</div>
+  const filterPill = (active) => ({
+    padding: '7px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: '600', cursor: 'pointer',
+    background: active ? 'linear-gradient(135deg, rgba(6,182,212,0.18), rgba(139,92,246,0.12))' : 'rgba(148,163,184,0.06)',
+    color: active ? '#22D3EE' : '#94a3b8',
+    border: `1px solid ${active ? 'rgba(6,182,212,0.30)' : 'rgba(148,163,184,0.10)'}`,
+    transition: 'all 0.2s', textTransform: 'capitalize',
+  });
 
-      <div className="space-y-3">
+  return (
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+      style={{ maxWidth: '780px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '60px' }}>
+
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+        <div>
+          <span className="eyebrow"><FileText style={{ width: '11px', height: '11px' }} /> Journal</span>
+          <h1 className="font-display" style={{ fontSize: '32px', fontWeight: '800', color: '#f1f5f9', marginTop: '6px', letterSpacing: '-0.03em' }}>
+            Trip <span className="text-gradient">Notes</span>
+          </h1>
+        </div>
+        <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={openAdd}
+          style={{
+            display: 'inline-flex', alignItems: 'center', gap: '8px',
+            padding: '11px 20px', borderRadius: '12px',
+            background: 'linear-gradient(135deg, #06B6D4, #8B5CF6)',
+            color: 'white', fontSize: '13px', fontWeight: '700',
+            border: 'none', cursor: 'pointer',
+            boxShadow: '0 8px 24px -4px rgba(6, 182, 212, 0.40)',
+          }}>
+          <Plus style={{ width: '15px', height: '15px' }} /> New Note
+        </motion.button>
+      </div>
+
+      <div style={{ display: 'flex', gap: '8px' }}>
+        {['all', 'day', 'stop'].map(f => (
+          <button key={f} onClick={() => setFilter(f)} style={filterPill(filter === f)}>
+            {f === 'all' ? 'All notes' : `By ${f}`}
+          </button>
+        ))}
+      </div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
         <AnimatePresence>
-          {filtered.map(note => (
-            <motion.div key={note._id} layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="glass rounded-xl p-4 space-y-2 border border-white/5 hover:border-teal-500/20 transition-all">
-              <div className="flex items-start justify-between">
-                <div><h3 className="font-bold text-white">{note.title}</h3><p className="text-xs text-slate-500">{timeAgo(note.createdAt)}</p></div>
-                <div className="flex gap-1"><button onClick={() => openEdit(note)} className="p-1.5 rounded-lg text-slate-400 hover:text-teal-400 hover:bg-teal-400/10"><Edit className="w-3.5 h-3.5" /></button><button onClick={() => handleDelete(note._id)} className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-400/10"><Trash2 className="w-3.5 h-3.5" /></button></div>
+          {filtered.map((note, i) => (
+            <motion.div key={note._id} layout
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ delay: i * 0.04 }}
+              whileHover={{ y: -3 }}
+              className="glass card-hover"
+              style={{ padding: '20px', position: 'relative' }}
+            >
+              <div style={{
+                position: 'absolute', top: '20px', bottom: '20px', left: 0, width: '3px',
+                borderRadius: '0 4px 4px 0',
+                background: 'linear-gradient(180deg, #A78BFA, #EC4899)',
+                boxShadow: '0 0 12px rgba(167, 139, 250, 0.40)',
+              }} />
+              <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+                <div style={{ flex: 1 }}>
+                  <h3 className="font-display" style={{ fontSize: '16px', fontWeight: '700', color: '#f1f5f9', letterSpacing: '-0.01em' }}>{note.title}</h3>
+                  <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{timeAgo(note.createdAt)}</p>
+                </div>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <motion.button whileTap={{ scale: 0.9 }} onClick={() => openEdit(note)}
+                    style={{ padding: '7px', borderRadius: '9px', background: 'rgba(148, 163, 184, 0.06)', border: '1px solid rgba(148, 163, 184, 0.10)', cursor: 'pointer', color: '#94a3b8' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#22D3EE'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
+                    <Edit style={{ width: '13px', height: '13px' }} />
+                  </motion.button>
+                  <motion.button whileTap={{ scale: 0.9 }} onClick={() => handleDelete(note._id)}
+                    style={{ padding: '7px', borderRadius: '9px', background: 'rgba(248, 113, 113, 0.06)', border: '1px solid rgba(248, 113, 113, 0.12)', cursor: 'pointer', color: '#94a3b8' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#f87171'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
+                    <Trash2 style={{ width: '13px', height: '13px' }} />
+                  </motion.button>
+                </div>
               </div>
-              <p className="text-sm text-slate-300 line-clamp-3">{note.content}</p>
-              <div className="flex gap-2">{note.day && <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 text-xs flex items-center gap-1"><Calendar className="w-3 h-3" />{note.day}</span>}{note.stop && <span className="px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 text-xs flex items-center gap-1"><MapPin className="w-3 h-3" />{note.stop}</span>}</div>
+              <p style={{
+                fontSize: '13px', color: '#cbd5e1', lineHeight: 1.6, marginTop: '10px',
+                display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
+              }}>
+                {note.content}
+              </p>
+              {(note.day || note.stop) && (
+                <div style={{ display: 'flex', gap: '6px', marginTop: '12px' }}>
+                  {note.day && (
+                    <span style={{
+                      padding: '4px 10px', borderRadius: '999px',
+                      background: 'rgba(96, 165, 250, 0.10)', border: '1px solid rgba(96, 165, 250, 0.20)',
+                      color: '#60A5FA', fontSize: '11px', fontWeight: 600,
+                      display: 'flex', alignItems: 'center', gap: '4px',
+                    }}>
+                      <Calendar style={{ width: '11px', height: '11px' }} /> {note.day}
+                    </span>
+                  )}
+                  {note.stop && (
+                    <span style={{
+                      padding: '4px 10px', borderRadius: '999px',
+                      background: 'rgba(167, 139, 250, 0.10)', border: '1px solid rgba(167, 139, 250, 0.20)',
+                      color: '#A78BFA', fontSize: '11px', fontWeight: 600,
+                      display: 'flex', alignItems: 'center', gap: '4px',
+                    }}>
+                      <MapPin style={{ width: '11px', height: '11px' }} /> {note.stop}
+                    </span>
+                  )}
+                </div>
+              )}
             </motion.div>
           ))}
         </AnimatePresence>
-        {filtered.length === 0 && <div className="text-center py-16 glass rounded-2xl"><FileText className="w-10 h-10 text-slate-600 mx-auto mb-3" /><p className="text-slate-400">No notes yet. Start journaling!</p></div>}
+        {filtered.length === 0 && (
+          <div className="glass" style={{ textAlign: 'center', padding: '60px 20px' }}>
+            <Sparkles style={{ width: '32px', height: '32px', color: '#475569', margin: '0 auto 14px' }} />
+            <h3 className="font-display" style={{ fontSize: '17px', fontWeight: '700', color: '#cbd5e1', marginBottom: '6px' }}>No notes yet</h3>
+            <p style={{ color: '#94a3b8', fontSize: '13px' }}>Start capturing your travel memories</p>
+          </div>
+        )}
       </div>
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Edit Note' : 'Add Note'}>
-        <div className="space-y-4">
-          <input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-500/50" placeholder="Note title..." />
-          <textarea value={form.content} onChange={e => setForm(p => ({ ...p, content: e.target.value }))} rows={4} className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-500/50 resize-none" placeholder="Write your note..." />
-          <div className="grid grid-cols-2 gap-3"><input value={form.day} onChange={e => setForm(p => ({ ...p, day: e.target.value }))} className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-slate-500" placeholder="e.g. Day 1" /><input value={form.stop} onChange={e => setForm(p => ({ ...p, stop: e.target.value }))} className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-slate-500" placeholder="e.g. Paris" /></div>
-          <button onClick={handleSave} className="w-full py-3 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold text-sm">{editing ? 'Update Note' : 'Add Note'}</button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <input value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))}
+            className="input-field" placeholder="Note title..." />
+          <textarea value={form.content} onChange={e => setForm(p => ({ ...p, content: e.target.value }))}
+            rows={5} className="input-field" style={{ resize: 'none' }} placeholder="Write your note..." />
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+            <input value={form.day} onChange={e => setForm(p => ({ ...p, day: e.target.value }))}
+              className="input-field" placeholder="e.g. Day 1" />
+            <input value={form.stop} onChange={e => setForm(p => ({ ...p, stop: e.target.value }))}
+              className="input-field" placeholder="e.g. Paris" />
+          </div>
+          <motion.button whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
+            onClick={handleSave} className="btn-primary"
+          >
+            {editing ? 'Update Note' : 'Add Note'}
+          </motion.button>
         </div>
       </Modal>
     </motion.div>

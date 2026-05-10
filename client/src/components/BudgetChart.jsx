@@ -1,13 +1,21 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
-const COLORS = ['#06B6D4', '#8B5CF6', '#F59E0B', '#EF4444', '#10B981', '#EC4899', '#6366F1'];
+const COLORS = ['#22D3EE', '#A78BFA', '#F59E0B', '#F472B6', '#34D399', '#60A5FA', '#FB7185'];
 
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="glass rounded-lg px-3 py-2 text-xs">
-        <p className="text-white font-medium">{payload[0].name}</p>
-        <p className="text-teal-400">${payload[0].value}</p>
+      <div style={{
+        background: 'rgba(10, 14, 28, 0.95)',
+        border: '1px solid rgba(148, 163, 184, 0.18)',
+        borderRadius: '10px',
+        padding: '8px 12px',
+        backdropFilter: 'blur(16px)',
+        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.45)',
+        fontSize: '12px',
+      }}>
+        <p style={{ color: '#f1f5f9', fontWeight: 600 }}>{payload[0].name}</p>
+        <p style={{ color: '#22D3EE', marginTop: '2px', fontWeight: 700 }}>₹{payload[0].value}</p>
       </div>
     );
   }
@@ -22,7 +30,7 @@ export const BudgetPieChart = ({ breakdown = {} }) => {
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-48 text-slate-500 text-sm">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px', color: '#64748b', fontSize: '13px' }}>
         No expense data yet
       </div>
     );
@@ -31,25 +39,33 @@ export const BudgetPieChart = ({ breakdown = {} }) => {
   return (
     <ResponsiveContainer width="100%" height={250}>
       <PieChart>
+        <defs>
+          {COLORS.map((c, i) => (
+            <linearGradient key={i} id={`pie-grad-${i}`} x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stopColor={c} stopOpacity={1} />
+              <stop offset="100%" stopColor={c} stopOpacity={0.6} />
+            </linearGradient>
+          ))}
+        </defs>
         <Pie
           data={data}
           cx="50%"
           cy="50%"
-          innerRadius={55}
-          outerRadius={90}
-          paddingAngle={3}
+          innerRadius={58}
+          outerRadius={92}
+          paddingAngle={4}
           dataKey="value"
           stroke="none"
         >
           {data.map((_, index) => (
-            <Cell key={index} fill={COLORS[index % COLORS.length]} />
+            <Cell key={index} fill={`url(#pie-grad-${index % COLORS.length})`} />
           ))}
         </Pie>
         <Tooltip content={<CustomTooltip />} />
         <Legend
-          wrapperStyle={{ fontSize: '12px', color: '#94a3b8' }}
+          wrapperStyle={{ fontSize: '11px', color: '#94a3b8', fontWeight: 500 }}
           iconType="circle"
-          iconSize={8}
+          iconSize={9}
         />
       </PieChart>
     </ResponsiveContainer>
@@ -65,7 +81,7 @@ export const BudgetBarChart = ({ sections = [] }) => {
 
   if (data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-48 text-slate-500 text-sm">
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '200px', color: '#64748b', fontSize: '13px' }}>
         No section data yet
       </div>
     );
@@ -74,13 +90,23 @@ export const BudgetBarChart = ({ sections = [] }) => {
   return (
     <ResponsiveContainer width="100%" height={250}>
       <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
-        <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} />
-        <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend wrapperStyle={{ fontSize: '12px', color: '#94a3b8' }} iconSize={8} />
-        <Bar dataKey="Budget" fill="#06B6D4" radius={[4, 4, 0, 0]} />
-        <Bar dataKey="Spent" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+        <defs>
+          <linearGradient id="bar-budget" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#22D3EE" stopOpacity={1} />
+            <stop offset="100%" stopColor="#06B6D4" stopOpacity={0.6} />
+          </linearGradient>
+          <linearGradient id="bar-spent" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#A78BFA" stopOpacity={1} />
+            <stop offset="100%" stopColor="#8B5CF6" stopOpacity={0.6} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid strokeDasharray="3 3" stroke="rgba(148, 163, 184, 0.06)" />
+        <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={{ stroke: 'rgba(148, 163, 184, 0.10)' }} tickLine={false} />
+        <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} axisLine={{ stroke: 'rgba(148, 163, 184, 0.10)' }} tickLine={false} />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: 'rgba(148, 163, 184, 0.04)' }} />
+        <Legend wrapperStyle={{ fontSize: '11px', color: '#94a3b8', fontWeight: 500 }} iconSize={10} />
+        <Bar dataKey="Budget" fill="url(#bar-budget)" radius={[6, 6, 0, 0]} />
+        <Bar dataKey="Spent" fill="url(#bar-spent)" radius={[6, 6, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

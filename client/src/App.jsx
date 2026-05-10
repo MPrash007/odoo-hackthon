@@ -20,6 +20,7 @@ import UserProfilePage from './pages/UserProfilePage';
 import TripNotesPage from './pages/TripNotesPage';
 import CommunityPage from './pages/CommunityPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import AIPlannerPage from './pages/AIPlannerPage';
 
 const PrivateRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -30,7 +31,16 @@ const PrivateRoute = ({ children }) => {
 const AppLayout = ({ children }) => (
   <>
     <Navbar />
-    <main className="pt-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative">
+    <main style={{
+      paddingTop: '88px',
+      paddingLeft: '24px',
+      paddingRight: '24px',
+      maxWidth: '1280px',
+      marginLeft: 'auto',
+      marginRight: 'auto',
+      position: 'relative',
+      width: '100%',
+    }}>
       {children}
     </main>
   </>
@@ -60,6 +70,7 @@ const AnimatedRoutes = () => {
         <Route path="/community" element={<PrivateRoute><AppLayout><CommunityPage /></AppLayout></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><AppLayout><UserProfilePage /></AppLayout></PrivateRoute>} />
         <Route path="/admin" element={<PrivateRoute><AppLayout><AdminDashboardPage /></AppLayout></PrivateRoute>} />
+        <Route path="/ai-planner" element={<PrivateRoute><AppLayout><AIPlannerPage /></AppLayout></PrivateRoute>} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

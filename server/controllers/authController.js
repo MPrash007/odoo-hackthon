@@ -8,17 +8,18 @@ const generateToken = (id) => {
 // POST /api/auth/register
 exports.register = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, phone, city, country, additionalInfo } = req.body;
+    const { firstName, lastName, email, password, phone, city, country, additionalInfo, profilePhoto } = req.body;
     const userExists = await User.findOne({ email });
     if (userExists) return res.status(400).json({ message: 'User already exists' });
 
-    const user = await User.create({ firstName, lastName, email, password, phone, city, country, additionalInfo });
+    const user = await User.create({ firstName, lastName, email, password, phone, city, country, additionalInfo, profilePhoto });
     res.status(201).json({
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
       role: user.role,
+      profilePhoto: user.profilePhoto,
       token: generateToken(user._id),
     });
   } catch (error) {
