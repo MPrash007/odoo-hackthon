@@ -145,7 +145,7 @@ const DashboardPage = () => {
               boxShadow: '0 0 60px rgba(139, 92, 246, 0.45), inset -20px -20px 60px rgba(0,0,0,0.4)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Globe style={{ width: '60px', height: '60px', color: 'white', opacity: 0.85 }} />
+              <Plane style={{ width: '56px', height: '56px', color: 'white', opacity: 0.95 }} />
             </div>
             {/* Orbiting dot */}
             <div className="animate-spin-slow" style={{
