@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const dotenv = require('dotenv');
 const path = require('path');
 const connectDB = require('./config/db');
+const pingServer = require('./cron');
 
 // Load env from root
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -45,4 +46,7 @@ app.get('/api/health', (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Traveloop server running on port ${PORT}`);
+  
+  // Start the cron job to keep the server awake on Render
+  pingServer();
 });
