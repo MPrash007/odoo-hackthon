@@ -39,8 +39,8 @@
 | Mongoose | ODM / Schema Validation |
 | JSON Web Tokens (JWT) | Authentication |
 | Groq SDK (LLaMA 3.3) | AI Itinerary Generation |
-| Cloudinary | Profile Photo Uploads |
-| Multer | File Handling |
+| Profile Photo Uploads |  Cloudinary
+| Multer | File Handling | 
 | Bcrypt.js | Password Hashing |
 | dotenv | Environment Configuration |
 
