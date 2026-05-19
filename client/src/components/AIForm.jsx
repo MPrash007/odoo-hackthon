@@ -71,13 +71,22 @@ const AIForm = ({ loading, setLoading, setItinerary, streamText, setStreamText }
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let done = false;
+      let buffer = '';
 
       while (!done) {
         const { value, done: doneReading } = await reader.read();
         done = doneReading;
-        const chunkValue = decoder.decode(value);
         
-        const lines = chunkValue.split('\n');
+        // Decode the new chunk and append it to our buffer
+        buffer += decoder.decode(value, { stream: true });
+        
+        // Split by newline to get individual SSE events
+        const lines = buffer.split('\n');
+        
+        // The last element is either an incomplete line or an empty string (if it ended with \n)
+        // We pop it off and keep it in the buffer for the next chunk
+        buffer = lines.pop() || '';
+        
         for (const line of lines) {
           if (line.startsWith('data: ')) {
             const dataStr = line.slice(6);
