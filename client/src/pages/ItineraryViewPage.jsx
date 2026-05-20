@@ -252,7 +252,7 @@ const ItineraryViewPage = () => {
           </div>
 
           <div className="glass" style={{ padding: '20px' }}>
-            <h3 className="font-display" style={{ fontSize: '15px', fontWeight: '700', color: '#f1f5f9', marginBottom: '12px' }}>By Section</h3>
+            <h3 className="font-display" style={{ fontSize: '15px', fontWeight: '700', color: '#f1f5f9', marginBottom: '12px' }}>By Day</h3>
             <BudgetBarChart sections={budget?.sections} />
           </div>
 

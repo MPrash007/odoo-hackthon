@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Globe, Calendar, MapPin, Copy, Sparkles, ArrowLeft, User } from 'lucide-react';
+import { Globe, Calendar, MapPin, Copy, Sparkles, ArrowLeft, User, MessageCircle } from 'lucide-react';
 import { tripService } from '../services/tripService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { formatDateRange } from '../utils/formatDate';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
+import PaymentModal from '../components/PaymentModal';
 
 const PublicItineraryPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     tripService.getPublicTrip(id).then(setData).catch(() => {}).finally(() => setLoading(false));
@@ -41,9 +46,9 @@ const PublicItineraryPage = () => {
         borderBottom: '1px solid rgba(148, 163, 184, 0.08)',
       }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', padding: '14px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Link to="/login" style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#cbd5e1', fontSize: '13px', textDecoration: 'none' }}>
+          <button onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#cbd5e1', fontSize: '13px', border: 'none', background: 'transparent', cursor: 'pointer', padding: 0 }}>
             <ArrowLeft style={{ width: '15px', height: '15px' }} /> Back
-          </Link>
+          </button>
           <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
             <div style={{
               width: '32px', height: '32px', borderRadius: '10px',
@@ -166,7 +171,7 @@ const PublicItineraryPage = () => {
           </motion.div>
         ))}
 
-        <div style={{ textAlign: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', flexWrap: 'wrap' }}>
           <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
             onClick={async () => { 
               try {
@@ -189,8 +194,30 @@ const PublicItineraryPage = () => {
             }}>
             <Copy style={{ width: '15px', height: '15px' }} /> Copy This Trip
           </motion.button>
+
+          {/* Chat With Traveler Button */}
+          {user && trip.user && user._id !== trip.user._id && (
+            <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+              onClick={() => setShowPaymentModal(true)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: '10px',
+                padding: '14px 28px', borderRadius: '14px',
+                background: 'linear-gradient(135deg, #06B6D4, #3B82F6)',
+                color: 'white', fontWeight: '700', fontSize: '14px',
+                border: 'none', cursor: 'pointer',
+                boxShadow: '0 12px 32px -6px rgba(6, 182, 212, 0.50)',
+              }}>
+              <MessageCircle style={{ width: '15px', height: '15px' }} /> Chat With Traveler
+            </motion.button>
+          )}
         </div>
       </div>
+
+      <PaymentModal 
+        isOpen={showPaymentModal} 
+        onClose={() => setShowPaymentModal(false)} 
+        trip={data?.trip} 
+      />
     </div>
   );
 };
