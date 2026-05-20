@@ -7,7 +7,7 @@ import { itineraryService } from '../services/itineraryService';
 import LoadingSpinner from '../components/LoadingSpinner';
 import toast from 'react-hot-toast';
 
-const emptySection = () => ({ title: 'New Section', description: '', dateRange: { start: '', end: '' }, budget: 0, activities: [] });
+const emptySection = (idx = 1) => ({ title: `Day ${idx}`, description: '', budget: 0, activities: [] });
 const emptyActivity = () => ({ name: '', type: 'activity', date: '', time: '', cost: 0, notes: '' });
 
 const ItineraryBuilderPage = () => {
@@ -34,11 +34,18 @@ const ItineraryBuilderPage = () => {
   }, [id]);
 
   const updateSection = (idx, field, value) => setSections(p => p.map((s, i) => i === idx ? { ...s, [field]: value } : s));
-  const updateDateRange = (idx, field, value) => setSections(p => p.map((s, i) => i === idx ? { ...s, dateRange: { ...s.dateRange, [field]: value } } : s));
   const addActivity = (sIdx) => setSections(p => p.map((s, i) => i === sIdx ? { ...s, activities: [...s.activities, emptyActivity()] } : s));
   const updateActivity = (sIdx, aIdx, field, value) => setSections(p => p.map((s, i) => i === sIdx ? { ...s, activities: s.activities.map((a, j) => j === aIdx ? { ...a, [field]: value } : a) } : s));
   const removeActivity = (sIdx, aIdx) => setSections(p => p.map((s, i) => i === sIdx ? { ...s, activities: s.activities.filter((_, j) => j !== aIdx) } : s));
-  const addSection = () => setSections(p => [...p, emptySection()]);
+  
+  const maxDays = trip ? Math.ceil((new Date(trip.endDate) - new Date(trip.startDate)) / (1000 * 60 * 60 * 24)) + 1 : 1;
+  const addSection = () => {
+    if (sections.length >= maxDays) {
+      toast.error(`This trip is only ${maxDays} day(s) long!`);
+      return;
+    }
+    setSections(p => [...p, emptySection(p.length + 1)]);
+  };
   const removeSection = (idx) => setSections(p => p.filter((_, i) => i !== idx));
 
   const handleSave = async () => {
@@ -63,7 +70,7 @@ const ItineraryBuilderPage = () => {
             {trip?.title || 'Itinerary Builder'}
           </h1>
           <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: '6px' }}>
-            Design each phase of your trip with sections and activities
+            Design each phase of your trip with days and activities
           </p>
         </div>
         <motion.button
@@ -127,7 +134,7 @@ const ItineraryBuilderPage = () => {
                     color: '#f1f5f9', fontSize: '20px', fontWeight: '700',
                     width: '100%', letterSpacing: '-0.01em',
                   }}
-                  placeholder="Section Title"
+                  placeholder="Day Title (e.g. Day 1 - Arrival)"
                 />
               </div>
               <motion.button
@@ -145,19 +152,11 @@ const ItineraryBuilderPage = () => {
             </div>
 
             <textarea value={section.description} onChange={e => updateSection(sIdx, 'description', e.target.value)} rows={2}
-              className="input-field" style={{ resize: 'none' }} placeholder="Brief description of this section..." />
+              className="input-field" style={{ resize: 'none' }} placeholder="Brief description of this day..." />
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-              <div>
-                <label style={miniLabel}><Calendar style={{ width: '11px', height: '11px', display: 'inline', marginRight: '5px', color: '#60A5FA' }} />From</label>
-                <input type="date" value={section.dateRange?.start?.split('T')[0] || ''} onChange={e => updateDateRange(sIdx, 'start', e.target.value)} className="input-field" />
-              </div>
-              <div>
-                <label style={miniLabel}><Calendar style={{ width: '11px', height: '11px', display: 'inline', marginRight: '5px', color: '#60A5FA' }} />To</label>
-                <input type="date" value={section.dateRange?.end?.split('T')[0] || ''} onChange={e => updateDateRange(sIdx, 'end', e.target.value)} className="input-field" />
-              </div>
-              <div>
-                <label style={miniLabel}><DollarSign style={{ width: '11px', height: '11px', display: 'inline', marginRight: '5px', color: '#34d399' }} />Budget</label>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <div style={{ maxWidth: '200px' }}>
+                <label style={miniLabel}><DollarSign style={{ width: '11px', height: '11px', display: 'inline', marginRight: '5px', color: '#34d399' }} />Daily Budget (₹)</label>
                 <input type="number" value={section.budget} onChange={e => updateSection(sIdx, 'budget', Number(e.target.value))} className="input-field" placeholder="0" />
               </div>
             </div>
@@ -229,7 +228,7 @@ const ItineraryBuilderPage = () => {
           e.currentTarget.style.color = '#94a3b8';
         }}
       >
-        <Sparkles style={{ width: '15px', height: '15px' }} /> Add another section
+        <Sparkles style={{ width: '15px', height: '15px' }} /> Add another day
       </motion.button>
     </motion.div>
   );

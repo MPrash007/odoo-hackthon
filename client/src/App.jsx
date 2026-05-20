@@ -19,6 +19,7 @@ import PublicItineraryPage from './pages/PublicItineraryPage';
 import UserProfilePage from './pages/UserProfilePage';
 import TripNotesPage from './pages/TripNotesPage';
 import CommunityPage from './pages/CommunityPage';
+import ChatPage from './pages/ChatPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
 import AIPlannerPage from './pages/AIPlannerPage';
 
@@ -68,6 +69,7 @@ const AnimatedRoutes = () => {
         <Route path="/trips/:id/expense" element={<PrivateRoute><AppLayout><BudgetPage /></AppLayout></PrivateRoute>} />
         <Route path="/search" element={<PrivateRoute><AppLayout><CitySearchPage /></AppLayout></PrivateRoute>} />
         <Route path="/community" element={<PrivateRoute><AppLayout><CommunityPage /></AppLayout></PrivateRoute>} />
+        <Route path="/chat" element={<PrivateRoute><AppLayout><ChatPage /></AppLayout></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><AppLayout><UserProfilePage /></AppLayout></PrivateRoute>} />
         <Route path="/admin" element={<PrivateRoute><AppLayout><AdminDashboardPage /></AppLayout></PrivateRoute>} />
         <Route path="/ai-planner" element={<PrivateRoute><AppLayout><AIPlannerPage /></AppLayout></PrivateRoute>} />

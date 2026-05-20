@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Map, Users, Search, CheckSquare, FileText, PieChart, Shield } from 'lucide-react';
+import { LayoutDashboard, Map, Users, Search, CheckSquare, FileText, PieChart, Shield, MessageCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
@@ -10,6 +10,7 @@ const Sidebar = () => {
     { to: '/trips', label: 'My Trips', icon: Map },
     { to: '/search', label: 'Discover', icon: Search },
     { to: '/community', label: 'Community', icon: Users },
+    { to: '/chat', label: 'Messages', icon: MessageCircle },
   ];
 
   if (user?.role === 'admin') {

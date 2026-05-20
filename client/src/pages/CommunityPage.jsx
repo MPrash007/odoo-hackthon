@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Search, Globe, Eye, Heart, Sparkles, MapPin, Calendar } from 'lucide-react';
+import { Users, Search, Globe, Eye, Heart, Sparkles, MapPin, Calendar, MessageCircle } from 'lucide-react';
 import { tripService } from '../services/tripService';
 import { formatDateRange } from '../utils/formatDate';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import PaymentModal from '../components/PaymentModal';
 
 const CommunityPage = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const CommunityPage = () => {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [paymentModalData, setPaymentModalData] = useState(null);
 
   useEffect(() => {
     tripService.getPublicTrips()
@@ -106,9 +108,17 @@ const CommunityPage = () => {
               </div>
 
               <div style={{ flex: 1, minWidth: '260px', padding: '22px 26px', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center' }}>
-                <h3 className="font-display" style={{
-                  fontSize: '19px', fontWeight: '700', color: '#f1f5f9', letterSpacing: '-0.01em',
-                }}>{trip.title}</h3>
+                <div>
+                  <h3 className="font-display" style={{
+                    fontSize: '19px', fontWeight: '700', color: '#f1f5f9', letterSpacing: '-0.01em',
+                  }}>{trip.title}</h3>
+                  {trip.user && (
+                    <span style={{ fontSize: '12px', color: '#64748b', display: 'block', marginTop: '2px' }}>
+                      by {trip.user.firstName} {trip.user.lastName}
+                    </span>
+                  )}
+                </div>
+
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', fontSize: '12px', color: '#94a3b8' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                     <Calendar style={{ width: '12px', height: '12px', color: '#22D3EE' }} />
@@ -192,6 +202,12 @@ const CommunityPage = () => {
           </div>
         )}
       </div>
+
+      <PaymentModal 
+        isOpen={!!paymentModalData} 
+        onClose={() => setPaymentModalData(null)} 
+        trip={paymentModalData} 
+      />
     </motion.div>
   );
 };
