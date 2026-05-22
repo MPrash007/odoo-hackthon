@@ -1,49 +1,56 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Map, Users, Search, CheckSquare, FileText, PieChart, Shield, MessageCircle } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { LayoutDashboard, Map, Search, Users, Sparkles, MessageCircle, User, Settings } from 'lucide-react';
 
-const Sidebar = () => {
-  const { user } = useAuth();
-  
-  const links = [
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/trips', label: 'My Trips', icon: Map },
-    { to: '/search', label: 'Discover', icon: Search },
-    { to: '/community', label: 'Community', icon: Users },
-    { to: '/chat', label: 'Messages', icon: MessageCircle },
-  ];
+const links = [
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/trips', label: 'My Trips', icon: Map },
+  { to: '/search', label: 'Discover', icon: Search },
+  { to: '/community', label: 'Community', icon: Users },
+  { to: '/chat', label: 'Chats', icon: MessageCircle },
+  { to: '/ai-planner', label: 'AI Planner', icon: Sparkles },
+  { to: '/profile', label: 'Profile', icon: User },
+];
 
-  if (user?.role === 'admin') {
-    links.push({ to: '/admin', label: 'Admin', icon: Shield });
-  }
-
-  return (
-    <aside className="hidden lg:flex flex-col w-64 fixed left-0 top-16 bottom-0 glass border-r border-white/5 p-4 z-40">
-      <div className="space-y-1 flex-1">
-        {links.map(link => {
-          const Icon = link.icon;
-          return (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
-                ${isActive 
-                  ? 'bg-teal-500/15 text-teal-400 shadow-sm' 
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'}`
-              }
-            >
-              <Icon className="w-4.5 h-4.5" />
-              {link.label}
-            </NavLink>
-          );
+const Sidebar = () => (
+  <aside style={{
+    position: 'fixed',
+    left: 0,
+    top: '68px',
+    bottom: 0,
+    width: '240px',
+    background: '#FFFFFF',
+    borderRight: '1px solid #E2E8F0',
+    padding: '24px 12px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    overflowY: 'auto',
+    zIndex: 40,
+  }}>
+    {links.map(({ to, label, icon: Icon }) => (
+      <NavLink
+        key={to}
+        to={to}
+        style={({ isActive }) => ({
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          padding: '11px 16px',
+          borderRadius: '12px',
+          fontSize: '14px',
+          fontWeight: isActive ? '600' : '400',
+          color: isActive ? '#2563EB' : '#64748B',
+          background: isActive ? 'rgba(37, 99, 235, 0.06)' : 'transparent',
+          border: `1px solid ${isActive ? 'rgba(37, 99, 235, 0.12)' : 'transparent'}`,
+          textDecoration: 'none',
+          transition: 'all 0.2s ease',
         })}
-      </div>
-      <div className="pt-4 border-t border-white/10">
-        <p className="text-xs text-slate-500 text-center">© 2024 Traveloop</p>
-      </div>
-    </aside>
-  );
-};
+      >
+        <Icon style={{ width: '18px', height: '18px' }} />
+        {label}
+      </NavLink>
+    ))}
+  </aside>
+);
 
 export default Sidebar;

@@ -57,48 +57,47 @@ const UserProfilePage = () => {
 
       <div>
         <span className="eyebrow"><Sparkles style={{ width: '11px', height: '11px' }} /> Your account</span>
-        <h1 className="font-display" style={{ fontSize: '34px', fontWeight: '800', color: '#f1f5f9', marginTop: '6px', letterSpacing: '-0.03em' }}>
+        <h1 className="font-display" style={{ fontSize: '34px', fontWeight: '800', color: '#111827', marginTop: '6px', letterSpacing: '-0.03em' }}>
           My <span className="text-gradient">Profile</span>
         </h1>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '24px' }} className="grid grid-cols-1 md:grid-cols-[1fr_2fr]">
         {/* Profile Card */}
-        <div className="glass" style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative', overflow: 'hidden' }}>
-          <div className="animate-float-slow" style={{ position: 'absolute', top: '-50px', right: '-50px', width: '180px', height: '180px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(6, 182, 212, 0.10), transparent 70%)', pointerEvents: 'none' }} />
+        <div style={{ padding: '28px', display: 'flex', flexDirection: 'column', gap: '20px', position: 'relative', overflow: 'hidden', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(17,24,39,0.04)' }}>
+          <div className="animate-float-slow" style={{ position: 'absolute', top: '-50px', right: '-50px', width: '180px', height: '180px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(37, 99, 235, 0.08), transparent 70%)', pointerEvents: 'none' }} />
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}>
             <motion.div whileHover={{ scale: 1.04 }}
               style={{
                 position: 'relative',
                 width: '92px', height: '92px', borderRadius: '50%',
-                background: 'linear-gradient(135deg, #06B6D4, #8B5CF6, #EC4899)',
+                background: 'linear-gradient(135deg, #2563EB, #7C3AED, #EC4899)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: '32px', fontWeight: '800', color: 'white',
-                boxShadow: '0 12px 32px rgba(6, 182, 212, 0.40)',
+                boxShadow: '0 8px 24px rgba(37, 99, 235, 0.25)',
                 fontFamily: 'var(--font-display)',
               }}>
               {profile?.firstName?.[0]}{profile?.lastName?.[0]}
               <span style={{
                 position: 'absolute', bottom: '4px', right: '4px',
                 width: '14px', height: '14px', borderRadius: '50%',
-                background: '#34d399',
-                border: '2px solid #050816',
-                boxShadow: '0 0 8px rgba(52, 211, 153, 0.6)',
+                background: '#059669',
+                border: '2px solid #FFFFFF',
               }} />
             </motion.div>
             <div style={{ textAlign: 'center' }}>
-              <h2 className="font-display" style={{ fontSize: '20px', fontWeight: '700', color: '#f1f5f9', letterSpacing: '-0.01em' }}>
+              <h2 className="font-display" style={{ fontSize: '20px', fontWeight: '700', color: '#111827', letterSpacing: '-0.01em' }}>
                 {profile?.firstName} {profile?.lastName}
               </h2>
-              <p style={{ fontSize: '13px', color: '#94a3b8', marginTop: '2px' }}>{profile?.email}</p>
+              <p style={{ fontSize: '13px', color: '#64748B', marginTop: '2px' }}>{profile?.email}</p>
               {profile?.role === 'admin' && (
                 <span style={{
                   display: 'inline-block', marginTop: '8px',
                   padding: '4px 10px', borderRadius: '999px',
-                  background: 'linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(236, 72, 153, 0.10))',
-                  border: '1px solid rgba(245, 158, 11, 0.30)',
-                  color: '#fbbf24', fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
+                  background: 'rgba(217, 119, 6, 0.08)',
+                  border: '1px solid rgba(217, 119, 6, 0.20)',
+                  color: '#D97706', fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
                 }}>
                   Admin
                 </span>
@@ -122,11 +121,11 @@ const UserProfilePage = () => {
               </select>
               <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
                 <motion.button whileTap={{ scale: 0.97 }} onClick={handleSave} disabled={saving}
-                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', borderRadius: '11px', background: 'linear-gradient(135deg, #06B6D4, #8B5CF6)', color: 'white', fontSize: '13px', fontWeight: '600', border: 'none', cursor: 'pointer' }}>
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', borderRadius: '11px', background: '#2563EB', color: 'white', fontSize: '13px', fontWeight: '600', border: 'none', cursor: 'pointer' }}>
                   <Save style={{ width: '14px', height: '14px' }} /> {saving ? 'Saving...' : 'Save'}
                 </motion.button>
                 <button onClick={() => { setForm(profile); setEdit(false); }}
-                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', borderRadius: '11px', background: 'rgba(148,163,184,0.06)', color: '#cbd5e1', fontSize: '13px', fontWeight: '600', border: '1px solid rgba(148,163,184,0.10)', cursor: 'pointer' }}>
+                  style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', borderRadius: '11px', background: '#FFFFFF', color: '#374151', fontSize: '13px', fontWeight: '600', border: '1px solid #E2E8F0', cursor: 'pointer' }}>
                   <X style={{ width: '14px', height: '14px' }} /> Cancel
                 </button>
               </div>
@@ -150,7 +149,7 @@ const UserProfilePage = () => {
                 <span style={{ textTransform: 'capitalize' }}>{profile?.languagePreference || 'English'}</span>
               </div>
               <motion.button whileTap={{ scale: 0.97 }} onClick={() => setEdit(true)}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', width: '100%', padding: '11px', borderRadius: '11px', background: 'rgba(148,163,184,0.06)', color: '#cbd5e1', fontSize: '13px', fontWeight: '600', border: '1px solid rgba(148,163,184,0.10)', cursor: 'pointer', marginTop: '4px' }}>
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px', width: '100%', padding: '11px', borderRadius: '11px', background: '#FFFFFF', color: '#374151', fontSize: '13px', fontWeight: '600', border: '1px solid #E2E8F0', cursor: 'pointer', marginTop: '4px', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                 <Edit2 style={{ width: '13px', height: '13px' }} /> Edit Profile
               </motion.button>
             </div>
@@ -160,22 +159,22 @@ const UserProfilePage = () => {
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '7px',
               width: '100%', padding: '11px', borderRadius: '11px',
-              background: 'rgba(248, 113, 113, 0.04)', color: '#f87171',
+              background: 'rgba(186, 26, 26, 0.04)', color: '#BA1A1A',
               fontSize: '12px', fontWeight: '600',
-              border: '1px solid rgba(248, 113, 113, 0.20)',
+              border: '1px solid rgba(186, 26, 26, 0.15)',
               cursor: 'pointer', transition: 'all 0.2s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(248, 113, 113, 0.10)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(248, 113, 113, 0.04)'; }}>
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(186, 26, 26, 0.08)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(186, 26, 26, 0.04)'; }}>
             <Trash2 style={{ width: '13px', height: '13px' }} /> Delete Account
           </button>
         </div>
 
         {/* Trips section */}
-        <div style={{ gridColumn: 'span 2', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {upcomingTrips.length > 0 && (
             <section>
-              <h3 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: '#f1f5f9', marginBottom: '14px', letterSpacing: '-0.01em' }}>Upcoming Trips</h3>
+              <h3 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: '#111827', marginBottom: '14px', letterSpacing: '-0.01em' }}>Upcoming Trips</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
                 {upcomingTrips.map(t => <TripCard key={t._id} trip={t} onView={id => navigate(`/trips/${id}/itinerary`)} />)}
               </div>
@@ -183,16 +182,16 @@ const UserProfilePage = () => {
           )}
           {pastTrips.length > 0 && (
             <section>
-              <h3 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: '#f1f5f9', marginBottom: '14px', letterSpacing: '-0.01em' }}>Past Trips</h3>
+              <h3 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: '#111827', marginBottom: '14px', letterSpacing: '-0.01em' }}>Past Trips</h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
                 {pastTrips.map(t => <TripCard key={t._id} trip={t} onView={id => navigate(`/trips/${id}/itinerary`)} />)}
               </div>
             </section>
           )}
           {trips.length === 0 && (
-            <div className="glass" style={{ textAlign: 'center', padding: '70px 20px' }}>
-              <User style={{ width: '40px', height: '40px', color: '#475569', margin: '0 auto 14px' }} />
-              <p style={{ color: '#94a3b8', fontSize: '14px' }}>No trips yet. Start planning!</p>
+            <div style={{ textAlign: 'center', padding: '70px 20px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+              <User style={{ width: '40px', height: '40px', color: '#94A3B8', margin: '0 auto 14px' }} />
+              <p style={{ color: '#64748B', fontSize: '14px' }}>No trips yet. Start planning!</p>
             </div>
           )}
         </div>
@@ -204,9 +203,9 @@ const UserProfilePage = () => {
 const infoRow = {
   display: 'flex', alignItems: 'center', gap: '10px',
   padding: '10px 14px', borderRadius: '11px',
-  background: 'rgba(15, 19, 36, 0.6)', border: '1px solid rgba(148, 163, 184, 0.06)',
-  fontSize: '13px', color: '#cbd5e1',
+  background: '#F8FAFC', border: '1px solid #F1F5F9',
+  fontSize: '13px', color: '#374151', fontWeight: 500,
 };
-const infoIcon = { width: '14px', height: '14px', color: '#22D3EE' };
+const infoIcon = { width: '14px', height: '14px', color: '#2563EB' };
 
 export default UserProfilePage;

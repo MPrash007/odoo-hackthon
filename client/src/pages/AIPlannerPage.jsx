@@ -10,21 +10,21 @@ const AIPlannerPage = () => {
   const [streamText, setStreamText] = useState('');
 
   return (
-    <div style={{ minHeight: '100vh', backgroundColor: '#0F172A', paddingBottom: '80px' }}>
+    <div style={{ paddingBottom: '80px' }}>
       {/* Hero */}
-      <div style={{ textAlign: 'center', paddingTop: '60px', paddingBottom: '40px' }}>
+      <div style={{ textAlign: 'center', paddingTop: '40px', paddingBottom: '30px' }}>
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '60px', height: '60px', borderRadius: '20px', background: 'linear-gradient(135deg, #06B6D4, #3B82F6)', marginBottom: '20px' }}
+          style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '60px', height: '60px', borderRadius: '20px', background: 'linear-gradient(135deg, #2563EB, #7C3AED)', marginBottom: '20px', boxShadow: '0 8px 24px rgba(37, 99, 235, 0.25)' }}
         >
-          <Plane style={{ color: 'white', width: '32px', height: '32px' }} />
+          <Plane style={{ color: 'white', width: '30px', height: '30px' }} />
         </motion.div>
         <motion.h1
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="font-display" style={{ fontSize: '42px', fontWeight: '800', color: 'white', marginBottom: '10px' }}
+          className="font-display" style={{ fontSize: '42px', fontWeight: '800', color: '#111827', marginBottom: '10px', letterSpacing: '-0.03em' }}
         >
           AI Trip Planner
         </motion.h1>
@@ -32,7 +32,7 @@ const AIPlannerPage = () => {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          style={{ color: '#22D3EE', fontSize: '18px', fontWeight: '500' }}
+          style={{ color: '#2563EB', fontSize: '18px', fontWeight: '600' }}
         >
           Your personalized journey, crafted in seconds.
         </motion.p>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Calendar, Users, DollarSign, Sparkles, Loader2, Compass } from 'lucide-react';
+import { aiService } from '../services/aiService';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -24,27 +25,31 @@ const TRAVEL_STYLES = [
 
 const AIForm = ({ loading, setLoading, setItinerary, streamText, setStreamText }) => {
   const { user } = useAuth();
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     destination: '',
     startDate: '',
     endDate: '',
     budget: '',
-    currency: 'USD',
+    currency: 'INR',
     travelers: 1,
     travelStyle: 'mid',
-    additionalNotes: ''
+    additionalNotes: '',
   });
   const [selectedInterests, setSelectedInterests] = useState([]);
 
   const toggleInterest = (label) => {
-    setSelectedInterests(prev => 
+    setSelectedInterests(prev =>
       prev.includes(label) ? prev.filter(i => i !== label) : [...prev, label]
     );
   };
 
+  const handleChange = (field, value) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.destination || !formData.startDate || !formData.endDate || !formData.budget) {
+    if (!form.destination || !form.startDate || !form.endDate || !form.budget) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -53,188 +58,281 @@ const AIForm = ({ loading, setLoading, setItinerary, streamText, setStreamText }
     setStreamText('');
 
     try {
-      const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-      const response = await fetch(`${API_URL}/ai/generate-itinerary`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${user?.token}`
-        },
-        body: JSON.stringify({
-          ...formData,
-          interests: selectedInterests
-        })
-      });
+      const result = await aiService.generateItinerary({
+        destination: form.destination,
+        startDate: form.startDate,
+        endDate: form.endDate,
+        budget: Number(form.budget),
+        currency: form.currency,
+        travelers: Number(form.travelers),
+        travelStyle: form.travelStyle,
+        interests: selectedInterests,
+        additionalNotes: form.additionalNotes,
+      }, (partial) => {
+        setStreamText(partial);
+      }, user.token);
 
-      if (!response.ok) throw new Error('Failed to generate itinerary');
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
-      let buffer = '';
-
-      while (!done) {
-        const { value, done: doneReading } = await reader.read();
-        done = doneReading;
-        
-        // Decode the new chunk and append it to our buffer
-        buffer += decoder.decode(value, { stream: true });
-        
-        // Split by newline to get individual SSE events
-        const lines = buffer.split('\n');
-        
-        // The last element is either an incomplete line or an empty string (if it ended with \n)
-        // We pop it off and keep it in the buffer for the next chunk
-        buffer = lines.pop() || '';
-        
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            const dataStr = line.slice(6);
-            if (!dataStr) continue;
-            
-            try {
-              const data = JSON.parse(dataStr);
-              if (data.error) throw new Error(data.error);
-              if (data.chunk) {
-                setStreamText(prev => prev + data.chunk);
-              }
-              if (data.done) {
-                const parsed = JSON.parse(data.full);
-                setItinerary(parsed);
-                setLoading(false);
-                return;
-              }
-            } catch (e) {
-              console.error('JSON Parse Error:', e);
-            }
-          }
-        }
-      }
-    } catch (error) {
-      toast.error(error.message || 'Something went wrong');
+      setItinerary(result);
+      toast.success('Itinerary crafted successfully!');
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || 'AI generation failed. Try again.');
+    } finally {
       setLoading(false);
     }
   };
 
+  const sectionCard = {
+    background: '#FFFFFF',
+    borderRadius: '20px',
+    padding: '24px',
+    border: '1px solid #E2E8F0',
+    boxShadow: '0 1px 3px rgba(17, 24, 39, 0.04)',
+  };
+
+  const labelStyle = {
+    fontSize: '13px', fontWeight: 600, color: '#374151', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px',
+  };
+
   return (
-    <div style={{ background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(20px)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '24px', padding: '32px' }}>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        
-        {/* Destination */}
-        <div>
-          <label style={{ display: 'block', color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>Where do you want to go?</label>
-          <input required type="text" placeholder="e.g. Tokyo, Japan" className="input-field" value={formData.destination} onChange={e => setFormData({ ...formData, destination: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '12px' }} />
+    <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Destination & Dates */}
+      <div style={sectionCard}>
+        <h3 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: '#111827', marginBottom: '20px' }}>
+          Where & When
+        </h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div>
+            <label style={labelStyle}>
+              <MapPin style={{ width: '14px', height: '14px', color: '#2563EB' }} /> Destination
+            </label>
+            <input
+              required
+              value={form.destination}
+              onChange={e => handleChange('destination', e.target.value)}
+              className="input-field"
+              placeholder="e.g. Tokyo, Japan"
+            />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div>
+              <label style={labelStyle}>
+                <Calendar style={{ width: '14px', height: '14px', color: '#2563EB' }} /> Start Date
+              </label>
+              <input
+                required
+                type="date"
+                value={form.startDate}
+                onChange={e => handleChange('startDate', e.target.value)}
+                className="input-field"
+              />
+            </div>
+            <div>
+              <label style={labelStyle}>
+                <Calendar style={{ width: '14px', height: '14px', color: '#2563EB' }} /> End Date
+              </label>
+              <input
+                required
+                type="date"
+                value={form.endDate}
+                onChange={e => handleChange('endDate', e.target.value)}
+                className="input-field"
+              />
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Dates */}
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>Start Date</label>
-            <input required type="date" className="input-field" value={formData.startDate} onChange={e => setFormData({ ...formData, startDate: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '12px' }} />
+      {/* Budget, Currency & Travelers */}
+      <div style={sectionCard}>
+        <h3 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: '#111827', marginBottom: '20px' }}>
+          Budget & Travelers
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+          <div>
+            <label style={labelStyle}>
+              <DollarSign style={{ width: '14px', height: '14px', color: '#059669' }} /> Total Budget
+            </label>
+            <input
+              required
+              type="number"
+              min="0"
+              value={form.budget}
+              onChange={e => handleChange('budget', e.target.value)}
+              className="input-field"
+              placeholder="e.g. 50000"
+            />
           </div>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>End Date</label>
-            <input required type="date" className="input-field" value={formData.endDate} onChange={e => setFormData({ ...formData, endDate: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '12px' }} />
-          </div>
-        </div>
-
-        {/* Budget, Currency, Travelers */}
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <div style={{ flex: 2 }}>
-            <label style={{ display: 'block', color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>Total Budget</label>
-            <input required type="number" min="0" placeholder="e.g. 5000" className="input-field" value={formData.budget} onChange={e => setFormData({ ...formData, budget: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '12px' }} />
-          </div>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>Currency</label>
-            <select className="input-field" value={formData.currency} onChange={e => setFormData({ ...formData, currency: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '12px' }}>
+          <div>
+            <label style={labelStyle}>
+              Currency
+            </label>
+            <select
+              value={form.currency}
+              onChange={e => handleChange('currency', e.target.value)}
+              className="input-field"
+            >
+              <option value="INR">INR (₹)</option>
               <option value="USD">USD ($)</option>
               <option value="EUR">EUR (€)</option>
-              <option value="INR">INR (₹)</option>
               <option value="GBP">GBP (£)</option>
             </select>
           </div>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: 'block', color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>Travelers</label>
-            <input required type="number" min="1" className="input-field" value={formData.travelers} onChange={e => setFormData({ ...formData, travelers: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '12px' }} />
+          <div>
+            <label style={labelStyle}>
+              <Users style={{ width: '14px', height: '14px', color: '#2563EB' }} /> Travelers
+            </label>
+            <input
+              required
+              type="number"
+              min="1"
+              value={form.travelers}
+              onChange={e => handleChange('travelers', e.target.value)}
+              className="input-field"
+            />
           </div>
         </div>
+      </div>
 
-        {/* Travel Style */}
-        <div>
-          <label style={{ display: 'block', color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>Travel Style</label>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-            {TRAVEL_STYLES.map(style => (
-              <div key={style.id} onClick={() => setFormData({ ...formData, travelStyle: style.id })} style={{
-                padding: '16px', borderRadius: '16px', cursor: 'pointer', transition: 'all 0.2s',
-                border: `1px solid ${formData.travelStyle === style.id ? '#22D3EE' : 'rgba(255,255,255,0.1)'}`,
-                background: formData.travelStyle === style.id ? 'rgba(6, 182, 212, 0.1)' : 'rgba(15, 23, 42, 0.4)',
-                textAlign: 'center'
-              }}>
+      {/* Travel Style */}
+      <div style={sectionCard}>
+        <h3 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: '#111827', marginBottom: '20px' }}>
+          Travel Style
+        </h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+          {TRAVEL_STYLES.map(style => {
+            const isSelected = form.travelStyle === style.id;
+            return (
+              <div
+                key={style.id}
+                onClick={() => handleChange('travelStyle', style.id)}
+                style={{
+                  padding: '16px',
+                  borderRadius: '16px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  border: `1px solid ${isSelected ? '#2563EB' : '#E2E8F0'}`,
+                  background: isSelected ? 'rgba(37, 99, 235, 0.04)' : '#FFFFFF',
+                  textAlign: 'center',
+                }}
+              >
                 <div style={{ fontSize: '24px', marginBottom: '8px' }}>{style.icon}</div>
-                <div style={{ color: formData.travelStyle === style.id ? '#22D3EE' : 'white', fontWeight: '600', fontSize: '14px' }}>{style.title}</div>
-                <div style={{ color: '#64748b', fontSize: '12px', marginTop: '4px' }}>{style.desc}</div>
+                <div style={{ color: isSelected ? '#2563EB' : '#111827', fontWeight: '600', fontSize: '14px' }}>{style.title}</div>
+                <div style={{ color: '#64748B', fontSize: '12px', marginTop: '4px' }}>{style.desc}</div>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
+      </div>
 
-        {/* Interests */}
-        <div>
-          <label style={{ display: 'block', color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>Interests & Activities</label>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {INTERESTS.map(interest => {
-              const isSelected = selectedInterests.includes(interest.label);
-              return (
-                <button type="button" key={interest.label} onClick={() => toggleInterest(interest.label)} style={{
-                  padding: '8px 16px', borderRadius: '999px', fontSize: '13px', cursor: 'pointer', transition: 'all 0.2s',
-                  background: isSelected ? '#06B6D4' : 'transparent',
-                  color: isSelected ? 'white' : '#67e8f9',
-                  border: `1px solid ${isSelected ? '#06B6D4' : 'rgba(6, 182, 212, 0.4)'}`,
-                }}>
-                  {interest.icon} {interest.label}
-                </button>
-              );
-            })}
-          </div>
+      {/* Interests */}
+      <div style={sectionCard}>
+        <h3 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: '#111827', marginBottom: '16px' }}>
+          Interests & Activities
+        </h3>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          {INTERESTS.map(interest => {
+            const isSelected = selectedInterests.includes(interest.label);
+            return (
+              <button
+                type="button"
+                key={interest.label}
+                onClick={() => toggleInterest(interest.label)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '999px',
+                  fontSize: '13px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  background: isSelected ? '#2563EB' : '#F8FAFC',
+                  color: isSelected ? '#FFFFFF' : '#475569',
+                  border: `1px solid ${isSelected ? '#2563EB' : '#E2E8F0'}`,
+                }}
+              >
+                {interest.icon} {interest.label}
+              </button>
+            );
+          })}
         </div>
+      </div>
 
-        {/* Additional Notes */}
-        <div>
-          <label style={{ display: 'block', color: '#94a3b8', fontSize: '14px', marginBottom: '8px' }}>Additional Notes (Optional)</label>
-          <textarea rows="3" placeholder="Any dietary restrictions, specific places you want to visit, pacing preferences..." className="input-field" value={formData.additionalNotes} onChange={e => setFormData({ ...formData, additionalNotes: e.target.value })} style={{ width: '100%', padding: '14px', borderRadius: '12px' }} />
-        </div>
+      {/* Additional Notes */}
+      <div style={sectionCard}>
+        <h3 className="font-display" style={{ fontSize: '18px', fontWeight: '700', color: '#111827', marginBottom: '16px' }}>
+          Additional Notes (Optional)
+        </h3>
+        <textarea
+          value={form.additionalNotes}
+          onChange={e => handleChange('additionalNotes', e.target.value)}
+          className="input-field"
+          rows={3}
+          style={{ resize: 'none' }}
+          placeholder="Any dietary restrictions, specific places you want to visit, pacing preferences..."
+        />
+      </div>
 
-        {/* Submit */}
-        <button type="submit" disabled={loading} style={{
-          padding: '16px', borderRadius: '16px', fontSize: '16px', fontWeight: '700', color: 'white',
-          background: 'linear-gradient(135deg, #06B6D4, #3B82F6)', border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
-          opacity: loading ? 0.8 : 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px'
-        }}>
-          {loading ? (
-            <>
-              <div className="shimmer-effect" style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'white' }} />
-              AI is crafting your itinerary...
-            </>
-          ) : (
-            <><Sparkles /> Generate My Trip ✨</>
-          )}
-        </button>
-
-        {/* Streaming Terminal */}
-        {loading && streamText && (
-          <div style={{
-            marginTop: '16px', padding: '16px', borderRadius: '12px',
-            background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(6, 182, 212, 0.3)',
-            color: '#67e8f9', fontFamily: 'monospace', fontSize: '13px',
-            whiteSpace: 'pre-wrap', maxHeight: '200px', overflowY: 'auto'
-          }}>
-            <span style={{ color: '#06B6D4' }}>AI › </span>
-            {streamText}
-            <span className="animate-pulse">▋</span>
-          </div>
+      {/* Submit */}
+      <motion.button
+        type="submit"
+        disabled={loading}
+        whileHover={!loading ? { scale: 1.01 } : {}}
+        whileTap={!loading ? { scale: 0.99 } : {}}
+        style={{
+          width: '100%', padding: '16px',
+          borderRadius: '14px',
+          background: 'linear-gradient(135deg, #2563EB, #7C3AED)',
+          color: 'white', fontSize: '15px', fontWeight: '700',
+          border: 'none', cursor: loading ? 'not-allowed' : 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
+          boxShadow: '0 4px 14px rgba(37, 99, 235, 0.20)',
+          opacity: loading ? 0.7 : 1,
+          fontFamily: 'var(--font-heading)',
+        }}
+      >
+        {loading ? (
+          <>
+            <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}>
+              <Loader2 style={{ width: '18px', height: '18px' }} />
+            </motion.div>
+            Crafting your itinerary...
+          </>
+        ) : (
+          <>
+            <Sparkles style={{ width: '18px', height: '18px' }} />
+            Generate My Trip ✨
+          </>
         )}
-      </form>
-    </div>
+      </motion.button>
+
+      {/* Stream output */}
+      <AnimatePresence>
+        {loading && streamText && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0 }}
+            style={{
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderRadius: '14px',
+              padding: '20px',
+              maxHeight: '200px', overflowY: 'auto',
+              boxShadow: '0 1px 3px rgba(17, 24, 39, 0.04)',
+            }}
+          >
+            <p style={{ fontSize: '11px', fontWeight: 700, color: '#2563EB', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+              ✨ AI is thinking…
+            </p>
+            <pre style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '12px', color: '#475569',
+              whiteSpace: 'pre-wrap', wordBreak: 'break-word', lineHeight: 1.5,
+            }}>
+              {streamText}
+            </pre>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </form>
   );
 };
 

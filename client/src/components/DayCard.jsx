@@ -1,107 +1,94 @@
+import { motion } from 'framer-motion';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, ChevronUp, MapPin } from 'lucide-react';
+import ActivityCard from './ActivityCard';
 
-const ICON_MAP = {
-  sightseeing: '🏛️',
-  food: '🍽️',
-  transport: '🚗',
-  accommodation: '🏨',
-  adventure: '🧗',
-  culture: '🎭',
-  relaxation: '🧘',
-};
-
-const DayCard = ({ day, isDefaultOpen }) => {
-  const [isOpen, setIsOpen] = useState(isDefaultOpen);
+const DayCard = ({ section, index }) => {
+  const [expanded, setExpanded] = useState(true);
+  const totalCost = section.activities?.reduce((sum, a) => sum + (a.cost || 0), 0) || 0;
 
   return (
-    <div style={{ background: 'rgba(255, 255, 255, 0.03)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.05)', overflow: 'hidden' }}>
-      <div 
-        onClick={() => setIsOpen(!isOpen)}
-        style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', background: isOpen ? 'rgba(255, 255, 255, 0.02)' : 'transparent' }}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.06 }}
+      style={{
+        background: '#FFFFFF',
+        border: '1px solid #E2E8F0',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        boxShadow: '0 1px 3px rgba(17, 24, 39, 0.04)',
+      }}
+    >
+      {/* Header */}
+      <div
+        onClick={() => setExpanded(!expanded)}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: '18px 20px',
+          cursor: 'pointer',
+          borderBottom: expanded ? '1px solid #F1F5F9' : 'none',
+          transition: 'background 0.15s ease',
+        }}
+        onMouseEnter={e => e.currentTarget.style.background = '#F8FAFC'}
+        onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ background: '#06B6D4', color: 'white', width: '40px', height: '40px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '18px' }}>
-            {day.day}
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          {/* Day number badge */}
+          <span style={{
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+            width: '32px', height: '32px', borderRadius: '10px',
+            background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.10), rgba(124, 58, 237, 0.10))',
+            color: '#2563EB', fontWeight: 700, fontSize: '13px',
+            border: '1px solid rgba(37, 99, 235, 0.15)',
+          }}>
+            {index + 1}
+          </span>
           <div>
-            <h3 style={{ margin: 0, color: 'white', fontSize: '18px', fontWeight: '600' }}>{day.title}</h3>
-            <div style={{ display: 'flex', gap: '12px', marginTop: '4px', fontSize: '13px', color: '#94a3b8' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><MapPin size={14} /> {day.location}</span>
-              <span>•</span>
-              <span>Budget: {day.dailyBudget}</span>
-            </div>
+            <h3 className="font-display" style={{
+              fontSize: '16px', fontWeight: '600', color: '#111827',
+              letterSpacing: '-0.01em',
+            }}>
+              {section.title}
+            </h3>
+            {section.description && (
+              <p style={{ fontSize: '13px', color: '#64748B', marginTop: '2px' }}>
+                {section.description}
+              </p>
+            )}
           </div>
         </div>
-        <div>
-          {isOpen ? <ChevronUp color="#94a3b8" /> : <ChevronDown color="#94a3b8" />}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <span style={{
+            fontSize: '12px', fontWeight: '600',
+            color: '#2563EB', background: 'rgba(37, 99, 235, 0.06)',
+            padding: '5px 12px', borderRadius: '999px',
+            border: '1px solid rgba(37, 99, 235, 0.12)',
+          }}>
+            ₹{totalCost}
+          </span>
+          {expanded
+            ? <ChevronUp style={{ width: '16px', height: '16px', color: '#94A3B8' }} />
+            : <ChevronDown style={{ width: '16px', height: '16px', color: '#94A3B8' }} />
+          }
         </div>
       </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            style={{ overflow: 'hidden' }}
-          >
-            <div style={{ padding: '20px', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
-              
-              {/* Activities Timeline */}
-              <div style={{ position: 'relative', paddingLeft: '16px', marginLeft: '8px', borderLeft: '2px solid rgba(6, 182, 212, 0.3)', display: 'flex', flexDirection: 'column', gap: '24px' }}>
-                {day.activities.map((act, idx) => (
-                  <div key={idx} style={{ position: 'relative' }}>
-                    {/* Timeline Dot */}
-                    <div style={{ position: 'absolute', left: '-23px', top: '4px', width: '12px', height: '12px', borderRadius: '50%', background: '#06B6D4', border: '2px solid #0F172A' }} />
-                    
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                      <div style={{ fontSize: '24px' }}>{ICON_MAP[act.type] || '📍'}</div>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                          <h4 style={{ margin: 0, color: '#f1f5f9', fontSize: '16px', fontWeight: '600' }}>{act.name}</h4>
-                          <span style={{ color: '#22D3EE', fontSize: '14px', fontWeight: '600' }}>{act.estimatedCost > 0 ? act.estimatedCost : 'Free'}</span>
-                        </div>
-                        <div style={{ color: '#64748b', fontSize: '13px', marginTop: '2px' }}>{act.time} • {act.duration} hrs</div>
-                        <p style={{ color: '#cbd5e1', fontSize: '14px', marginTop: '6px', lineHeight: '1.5' }}>{act.description}</p>
-                        {act.tips && (
-                          <div style={{ marginTop: '8px', padding: '8px 12px', background: 'rgba(245, 158, 11, 0.1)', borderLeft: '2px solid #f59e0b', borderRadius: '4px', color: '#fcd34d', fontSize: '13px' }}>
-                            💡 <strong>Tip:</strong> {act.tips}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Accommodation block */}
-              {day.accommodation && (
-                <div style={{ marginTop: '24px', padding: '16px', background: 'rgba(15, 23, 42, 0.6)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '20px' }}>🏨</span>
-                    <h4 style={{ margin: 0, color: 'white', fontSize: '15px' }}>Accommodation: {day.accommodation.name}</h4>
-                  </div>
-                  <div style={{ color: '#94a3b8', fontSize: '13px', marginLeft: '32px' }}>
-                    {day.accommodation.type} • {day.accommodation.estimatedCost} <br/>
-                    {day.accommodation.notes}
-                  </div>
-                </div>
-              )}
-
-              {/* Transport Note */}
-              {day.transport && (
-                <div style={{ marginTop: '12px', padding: '12px 16px', background: 'rgba(15, 23, 42, 0.6)', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.05)', display: 'flex', alignItems: 'center', gap: '8px', color: '#94a3b8', fontSize: '13px' }}>
-                  <span style={{ fontSize: '18px' }}>🚗</span> <strong>Transport:</strong> {day.transport}
-                </div>
-              )}
-
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
+      {/* Activities */}
+      {expanded && (
+        <div style={{ padding: '12px 16px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          {section.activities?.length > 0 ? (
+            section.activities.map((activity, i) => (
+              <ActivityCard key={i} activity={activity} />
+            ))
+          ) : (
+            <p style={{ padding: '14px', fontSize: '13px', color: '#94A3B8', fontStyle: 'italic' }}>
+              No activities added for this day
+            </p>
+          )}
+        </div>
+      )}
+    </motion.div>
   );
 };
 

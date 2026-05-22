@@ -1,148 +1,131 @@
 import { motion } from 'framer-motion';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
-import { RefreshCcw, Save, Share2, MapPin, Calendar, DollarSign, Lightbulb, CheckSquare } from 'lucide-react';
-import toast from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
+import { RotateCcw, Lightbulb, DollarSign, Sparkles } from 'lucide-react';
 import DayCard from './DayCard';
-
-const COLORS = ['#06B6D4', '#8B5CF6', '#F59E0B', '#10B981', '#EC4899'];
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { aiService } from '../services/aiService';
+import toast from 'react-hot-toast';
 
 const ItineraryResult = ({ itinerary, onReset }) => {
+  const { user } = useAuth();
   const navigate = useNavigate();
 
+  if (!itinerary) return null;
+
   const handleSave = async () => {
+    if (!user) {
+      toast.error('Please login to save the trip');
+      navigate('/login');
+      return;
+    }
+
+    const toastId = toast.loading('Saving your trip...');
     try {
-      const userStr = localStorage.getItem('traveloop_user');
-      const token = userStr ? JSON.parse(userStr).token : null;
-      
-      if (!token) {
-        toast.error('Please log in to save trips');
-        return;
+      const response = await aiService.saveItinerary(itinerary, user.token);
+      if (response.success && response.tripId) {
+        toast.success('Trip saved successfully!', { id: toastId });
+        navigate(`/trips/${response.tripId}/itinerary`);
+      } else {
+        toast.error('Failed to save trip', { id: toastId });
       }
-      const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
-      const res = await fetch(`${API_URL}/ai/save-itinerary`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({ aiItinerary: itinerary })
-      });
-      
-      if (!res.ok) throw new Error('Failed to save trip');
-      const data = await res.json();
-      
-      toast.success('Trip saved successfully!');
-      navigate(`/trips/${data.tripId}/build`);
-    } catch (error) {
-      toast.error(error.message);
+    } catch (err) {
+      toast.error(err.message || 'Failed to save trip', { id: toastId });
     }
   };
 
-  const handleShare = () => {
-    navigator.clipboard.writeText(window.location.href);
-    toast.success('Link copied to clipboard!');
-  };
-
-  // Prepare chart data
-  const chartData = itinerary.budgetBreakdown ? [
-    { name: 'Accommodation', value: itinerary.budgetBreakdown.accommodation || 0 },
-    { name: 'Food', value: itinerary.budgetBreakdown.food || 0 },
-    { name: 'Activities', value: itinerary.budgetBreakdown.activities || 0 },
-    { name: 'Transport', value: itinerary.budgetBreakdown.transport || 0 },
-    { name: 'Misc', value: itinerary.budgetBreakdown.miscellaneous || 0 },
-  ].filter(d => d.value > 0) : [];
+  const estimatedCost = itinerary.totalBudget || itinerary.estimatedTotalCost || 0;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-      
-      {/* Header Section */}
-      <div style={{ background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.1))', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '24px', padding: '40px 32px', textAlign: 'center' }}>
-        <h1 className="font-display" style={{ fontSize: '36px', color: 'white', marginBottom: '16px', fontWeight: '800' }}>{itinerary.tripTitle}</h1>
-        
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', flexWrap: 'wrap', marginBottom: '24px' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.05)', padding: '8px 16px', borderRadius: '20px', color: '#e2e8f0', fontSize: '14px' }}><MapPin size={16} color="#06B6D4" /> {itinerary.destination}</span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.05)', padding: '8px 16px', borderRadius: '20px', color: '#e2e8f0', fontSize: '14px' }}><Calendar size={16} color="#8B5CF6" /> {itinerary.totalDays} Days</span>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.05)', padding: '8px 16px', borderRadius: '20px', color: '#e2e8f0', fontSize: '14px' }}><DollarSign size={16} color="#10B981" /> {itinerary.estimatedTotalCost} {itinerary.currency}</span>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+        style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px',
+        }}
+      >
+        <div>
+          <h2 className="font-display" style={{ fontSize: '28px', fontWeight: '700', color: '#111827', letterSpacing: '-0.02em' }}>
+            {itinerary.tripTitle || itinerary.title}
+          </h2>
+          {estimatedCost > 0 && (
+            <p style={{ fontSize: '14px', color: '#64748B', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <DollarSign style={{ width: '14px', height: '14px', color: '#059669' }} />
+              Estimated Total: <strong style={{ color: '#111827' }}>₹{estimatedCost.toLocaleString()}</strong>
+            </p>
+          )}
         </div>
-
-        <p style={{ color: '#cbd5e1', fontSize: '16px', lineHeight: '1.6', maxWidth: '800px', margin: '0 auto 24px' }}>
-          {itinerary.summary}
-        </p>
-
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          {itinerary.highlights?.map((hl, i) => (
-            <span key={i} style={{ background: 'rgba(6, 182, 212, 0.15)', color: '#22D3EE', padding: '6px 14px', borderRadius: '12px', fontSize: '13px', border: '1px solid rgba(6, 182, 212, 0.3)' }}>{hl}</span>
-          ))}
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <motion.button whileTap={{ scale: 0.95 }} onClick={handleSave}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '10px 16px', borderRadius: '12px', fontSize: '13px', fontWeight: '600',
+              background: 'linear-gradient(135deg, #2563EB, #7C3AED)', color: 'white',
+              border: 'none', cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(37, 99, 235, 0.20)',
+            }}
+          >
+            <Sparkles style={{ width: '14px', height: '14px' }} /> Save Trip
+          </motion.button>
+          <motion.button whileTap={{ scale: 0.95 }} onClick={onReset}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '10px 16px', borderRadius: '12px', fontSize: '13px', fontWeight: '600',
+              background: '#F1F5F9', color: '#374151',
+              border: '1px solid #E2E8F0', cursor: 'pointer',
+            }}
+          >
+            <RotateCcw style={{ width: '14px', height: '14px' }} /> Plan Another
+          </motion.button>
         </div>
-      </div>
+      </motion.div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-        {/* Budget Breakdown */}
-        {chartData.length > 0 && (
-          <div style={{ background: 'rgba(255, 255, 255, 0.03)', borderRadius: '24px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-            <h3 style={{ color: 'white', fontSize: '18px', fontWeight: '600', marginBottom: '16px' }}>Budget Breakdown</h3>
-            <div style={{ height: '250px' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie data={chartData} cx="50%" cy="50%" innerRadius={60} outerRadius={80} paddingAngle={5} dataKey="value" stroke="none" isAnimationActive={true}>
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip contentStyle={{ background: '#0F172A', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px', color: 'white' }} itemStyle={{ color: 'white' }} />
-                  <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: '12px', color: '#94a3b8' }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
+      {/* Days */}
+      {itinerary.days?.map((day, i) => {
+        const activities = day.activities?.map(act => ({
+          ...act,
+          cost: act.cost !== undefined ? act.cost : act.estimatedCost || 0,
+          type: act.type === 'accommodation' ? 'hotel' : act.type
+        }));
+        return (
+          <DayCard key={i} section={{ title: day.title || `Day ${day.day}`, activities, description: '' }} index={i} />
+        );
+      })}
 
-        {/* Quick Info */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          <div style={{ background: 'rgba(255, 255, 255, 0.03)', borderRadius: '24px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-            <h3 style={{ color: 'white', fontSize: '18px', fontWeight: '600', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}><CheckSquare size={20} color="#06B6D4" /> Packing Essentials</h3>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-              {itinerary.packingEssentials?.map((item, i) => (
-                <span key={i} style={{ background: 'rgba(255, 255, 255, 0.05)', color: '#cbd5e1', padding: '6px 12px', borderRadius: '8px', fontSize: '13px' }}>{item}</span>
-              ))}
-            </div>
-          </div>
-
-          <div style={{ background: 'rgba(255, 255, 255, 0.03)', borderRadius: '24px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
-            <h3 style={{ color: 'white', fontSize: '18px', fontWeight: '600', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}><Lightbulb size={20} color="#F59E0B" /> Travel Tips</h3>
-            <ul style={{ margin: 0, paddingLeft: '20px', color: '#cbd5e1', fontSize: '14px', lineHeight: '1.6', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              {itinerary.travelTips?.map((tip, i) => (
-                <li key={i}>{tip}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Day by Day */}
-      <div>
-        <h2 style={{ color: 'white', fontSize: '24px', fontWeight: '700', marginBottom: '20px' }}>Day-by-Day Itinerary</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {itinerary.days?.map((day, index) => (
-            <DayCard key={day.day} day={day} isDefaultOpen={index === 0} />
-          ))}
-        </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '16px', flexWrap: 'wrap' }}>
-        <button onClick={onReset} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 24px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: '600', cursor: 'pointer' }}>
-          <RefreshCcw size={18} /> Plan Another Trip
-        </button>
-        <button onClick={handleShare} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 24px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontWeight: '600', cursor: 'pointer' }}>
-          <Share2 size={18} /> Share
-        </button>
-        <button onClick={handleSave} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '14px 28px', borderRadius: '12px', background: 'linear-gradient(135deg, #06B6D4, #3B82F6)', border: 'none', color: 'white', fontWeight: '600', cursor: 'pointer', boxShadow: '0 8px 24px rgba(6, 182, 212, 0.3)' }}>
-          <Save size={18} /> Save to My Trips
-        </button>
-      </div>
-
+      {/* Tips */}
+      {itinerary.tips?.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          style={{
+            background: '#FFFFFF',
+            border: '1px solid #E2E8F0',
+            borderRadius: '16px',
+            padding: '24px',
+            boxShadow: '0 1px 3px rgba(17, 24, 39, 0.04)',
+          }}
+        >
+          <h3 className="font-display" style={{
+            fontSize: '16px', fontWeight: '600', color: '#111827', marginBottom: '14px',
+            display: 'flex', alignItems: 'center', gap: '8px',
+          }}>
+            <Lightbulb style={{ width: '16px', height: '16px', color: '#D97706' }} /> Travel Tips
+          </h3>
+          <ul style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '0', listStyle: 'none' }}>
+            {itinerary.tips.map((tip, i) => (
+              <li key={i} style={{
+                display: 'flex', alignItems: 'flex-start', gap: '10px',
+                padding: '10px 14px', borderRadius: '10px',
+                background: '#FFFBEB',
+                border: '1px solid rgba(217, 119, 6, 0.12)',
+                fontSize: '13px', color: '#374151', lineHeight: 1.55,
+              }}>
+                <span style={{ color: '#D97706', fontWeight: 700, flexShrink: 0 }}>💡</span>
+                {tip}
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+      )}
     </div>
   );
 };

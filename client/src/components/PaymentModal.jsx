@@ -1,8 +1,8 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, MessageCircle, Sparkles, CheckCircle2, ShieldCheck, Clock } from 'lucide-react';
 import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, CreditCard, Shield, Sparkles, MessageCircle } from 'lucide-react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,159 +11,170 @@ const API_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 const PaymentModal = ({ isOpen, onClose, trip }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-
-  if (!isOpen || !trip) return null;
+  const [processing, setProcessing] = useState(false);
 
   const handlePayment = async () => {
-    if (!user) {
-      toast.error('Please login to continue');
-      return navigate('/login');
-    }
-
-    setLoading(true);
+    if (!user || !trip) return;
+    setProcessing(true);
     try {
-      const headers = { Authorization: `Bearer ${user.token}` };
-
-      // 1. Check if user already has access
-      const accessRes = await axios.get(`${API_URL}/chat/access/${trip._id}?creatorId=${trip.user._id || trip.user}`, { headers });
-      if (accessRes.data.hasAccess) {
-        toast.success('You already have access!');
-        navigate('/chat');
-        return;
-      }
-
-      // 2. Create Razorpay order
       const { data: order } = await axios.post(`${API_URL}/payment/create-order`, {
+        creatorId: trip.user._id || trip.user,
         tripId: trip._id,
-        creatorId: trip.user._id || trip.user
-      }, { headers });
+      }, { headers: { Authorization: `Bearer ${user.token}` } });
 
-      // 3. Load Razorpay
       const options = {
         key: order.keyId,
         amount: order.amount,
-        currency: order.currency,
-        name: "Traveloop Premium",
-        description: "Direct Chat Access with Traveler",
+        currency: 'INR',
+        name: 'Traveloop Premium Chat',
+        description: `Chat with ${trip.user.firstName || 'Traveler'} about "${trip.title}"`,
         order_id: order.orderId,
-        handler: async function (response) {
+        handler: async (response) => {
           try {
-            // 4. Verify payment on backend
-            const verifyRes = await axios.post(`${API_URL}/payment/verify`, {
+            await axios.post(`${API_URL}/payment/verify`, {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
+              creatorId: trip.user._id || trip.user,
               tripId: trip._id,
-              creatorId: trip.user._id || trip.user
-            }, { headers });
-
-            if (verifyRes.data.success) {
-              toast.success('Payment successful! Chat unlocked.');
-              navigate('/chat');
-            }
-          } catch (error) {
-            toast.error('Payment verification failed');
-          }
+            }, { headers: { Authorization: `Bearer ${user.token}` } });
+            toast.success('Payment successful! Chat unlocked for 24 hours.');
+            onClose();
+            navigate('/chat');
+          } catch { toast.error('Payment verification failed'); }
         },
-        prefill: {
-          name: `${user.firstName} ${user.lastName}`,
-          email: user.email,
-        },
-        theme: {
-          color: "#22D3EE"
-        }
+        prefill: { name: `${user.firstName} ${user.lastName}`, email: user.email },
+        theme: { color: '#2563EB' },
       };
-
-      const rzp1 = new window.Razorpay(options);
-      rzp1.on('payment.failed', function (response) {
-        toast.error('Payment failed or cancelled.');
-      });
-      rzp1.open();
-      onClose(); // Close modal on open
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Error processing payment request');
-    } finally {
-      setLoading(false);
-    }
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (err) {
+      if (err.response?.data?.chatId) {
+        toast.success('Chat already active!');
+        onClose();
+        navigate('/chat');
+      } else {
+        toast.error('Failed to initiate payment');
+      }
+    } finally { setProcessing(false); }
   };
 
   return (
     <AnimatePresence>
-      <div style={{
-        position: 'fixed', inset: 0, zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
-      }}>
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
-          style={{ position: 'absolute', inset: 0, background: 'rgba(5, 8, 22, 0.8)', backdropFilter: 'blur(8px)' }} />
-
-        <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
+      {isOpen && (
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          onClick={onClose}
           style={{
-            position: 'relative', width: '100%', maxWidth: '440px',
-            background: 'linear-gradient(180deg, #11163a 0%, #0b1027 100%)',
-            borderRadius: '24px', overflow: 'hidden', border: '1px solid rgba(148,163,184,0.1)',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
-          }}>
-          
-          {/* Header Banner */}
-          <div style={{ position: 'relative', height: '120px', background: 'linear-gradient(135deg, #06B6D4, #3B82F6)', overflow: 'hidden' }}>
-            <div className="noise" style={{ position: 'absolute', inset: 0, opacity: 0.2 }} />
-            <button onClick={onClose} style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(0,0,0,0.2)', border: 'none', color: 'white', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', zIndex: 2 }}>
-              <X style={{ width: '16px', height: '16px' }} />
-            </button>
-            <div style={{ position: 'absolute', bottom: '-30px', left: '32px', width: '64px', height: '64px', borderRadius: '18px', background: '#0f172a', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '3px solid #11163a', zIndex: 2 }}>
-              <MessageCircle style={{ color: '#22D3EE', width: '28px', height: '28px' }} />
-            </div>
-            {/* Sparkles */}
-            <Sparkles style={{ position: 'absolute', top: '20px', right: '40px', color: 'white', opacity: 0.4 }} />
-            <Sparkles style={{ position: 'absolute', bottom: '20px', right: '80px', color: 'white', opacity: 0.2, width: '16px' }} />
-          </div>
-
-          <div style={{ padding: '40px 32px 32px' }}>
-            <span className="eyebrow" style={{ color: '#F472B6', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <ShieldCheck style={{ width: '12px', height: '12px' }} /> Premium Access
-            </span>
-            <h2 className="font-display" style={{ fontSize: '24px', fontWeight: '800', color: 'white', marginBottom: '12px', lineHeight: 1.2 }}>
-              Chat with Traveler
-            </h2>
-            <p style={{ color: '#94a3b8', fontSize: '14px', lineHeight: 1.6, marginBottom: '24px' }}>
-              Unlock 24-hour direct access to this traveler and get personalized travel advice, hidden gems, real experiences, and budget tips.
-            </p>
-
-            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '16px', padding: '16px', marginBottom: '24px', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                <Clock style={{ color: '#FBBF24', width: '16px', height: '16px' }} />
-                <span style={{ color: '#cbd5e1', fontSize: '14px' }}>24-hour chat access window</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
-                <CheckCircle2 style={{ color: '#22D3EE', width: '16px', height: '16px' }} />
-                <span style={{ color: '#cbd5e1', fontSize: '14px' }}>Ask personalized questions</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <CheckCircle2 style={{ color: '#22D3EE', width: '16px', height: '16px' }} />
-                <span style={{ color: '#cbd5e1', fontSize: '14px' }}>Get exclusive local recommendations</span>
-              </div>
-            </div>
-
-            <button onClick={handlePayment} disabled={loading} style={{
-              width: '100%', padding: '16px', borderRadius: '14px',
-              background: 'linear-gradient(135deg, #06B6D4, #3B82F6)',
-              color: 'white', fontWeight: '700', fontSize: '16px', border: 'none',
-              cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.8 : 1,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
-              boxShadow: '0 10px 25px -5px rgba(6, 182, 212, 0.4)'
+            position: 'fixed', inset: 0, zIndex: 100,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: 'rgba(17, 24, 39, 0.35)',
+            backdropFilter: 'blur(8px)',
+            padding: '24px',
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94, y: 24 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.94, y: 24 }}
+            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+            onClick={e => e.stopPropagation()}
+            style={{
+              width: '100%', maxWidth: '420px',
+              background: '#FFFFFF',
+              borderRadius: '20px',
+              border: '1px solid #E2E8F0',
+              boxShadow: '0 20px 60px rgba(17, 24, 39, 0.15)',
+              overflow: 'hidden',
+            }}
+          >
+            {/* Hero */}
+            <div style={{
+              padding: '32px 28px 24px',
+              background: 'linear-gradient(135deg, rgba(37, 99, 235, 0.04), rgba(124, 58, 237, 0.04))',
+              textAlign: 'center',
+              borderBottom: '1px solid #F1F5F9',
+              position: 'relative',
             }}>
-              {loading ? (
-                <span className="shimmer-effect" style={{ width: '20px', height: '20px', borderRadius: '50%', background: 'white' }} />
-              ) : (
-                <>Unlock Chat for ₹20 <Sparkles style={{ width: '16px', height: '16px' }} /></>
-              )}
-            </button>
-            <p style={{ textAlign: 'center', color: '#64748b', fontSize: '12px', marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-              <ShieldCheck style={{ width: '12px', height: '12px' }} /> Secured by Razorpay
-            </p>
-          </div>
+              <button onClick={onClose} style={{
+                position: 'absolute', top: '14px', right: '14px',
+                padding: '6px', borderRadius: '10px', background: '#F1F5F9',
+                border: '1px solid #E2E8F0', cursor: 'pointer', color: '#64748B',
+              }}>
+                <X style={{ width: '16px', height: '16px' }} />
+              </button>
+
+              <div style={{
+                width: '56px', height: '56px', borderRadius: '16px',
+                background: 'linear-gradient(135deg, #2563EB, #7C3AED)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto 16px',
+                boxShadow: '0 8px 24px rgba(37, 99, 235, 0.30)',
+              }}>
+                <MessageCircle style={{ width: '26px', height: '26px', color: 'white' }} />
+              </div>
+
+              <h3 className="font-display" style={{ fontSize: '20px', fontWeight: '700', color: '#111827', marginBottom: '6px' }}>
+                Premium Traveler Chat
+              </h3>
+              <p style={{ color: '#64748B', fontSize: '14px', lineHeight: 1.5 }}>
+                Connect with <strong style={{ color: '#111827' }}>{trip?.user?.firstName || 'the traveler'}</strong> for 24 hours
+              </p>
+            </div>
+
+            {/* Details */}
+            <div style={{ padding: '24px 28px' }}>
+              <div style={{
+                padding: '16px', borderRadius: '14px',
+                background: '#F8FAFC', border: '1px solid #F1F5F9',
+                marginBottom: '20px',
+              }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
+                  <span style={{ color: '#64748B' }}>Trip</span>
+                  <span style={{ color: '#111827', fontWeight: 600 }}>{trip?.title}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', fontSize: '13px' }}>
+                  <span style={{ color: '#64748B' }}>Access</span>
+                  <span style={{ color: '#111827', fontWeight: 600 }}>24-hour window</span>
+                </div>
+                <div style={{ height: '1px', background: '#E2E8F0', margin: '10px 0' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '15px' }}>
+                  <span style={{ color: '#374151', fontWeight: 600 }}>Total</span>
+                  <span className="font-display" style={{ fontWeight: '800', color: '#2563EB', fontSize: '18px' }}>₹20</span>
+                </div>
+              </div>
+
+              {/* Trust */}
+              <div style={{
+                display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center',
+                marginBottom: '20px', fontSize: '12px', color: '#94A3B8',
+              }}>
+                <Shield style={{ width: '13px', height: '13px', color: '#059669' }} />
+                Secured by Razorpay · Safe & Encrypted
+              </div>
+
+              <motion.button
+                whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}
+                onClick={handlePayment}
+                disabled={processing}
+                style={{
+                  width: '100%', padding: '14px',
+                  borderRadius: '14px',
+                  background: '#2563EB',
+                  color: 'white', fontWeight: '700', fontSize: '14px',
+                  border: 'none', cursor: processing ? 'not-allowed' : 'pointer',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                  boxShadow: '0 6px 20px rgba(37, 99, 235, 0.30)',
+                  opacity: processing ? 0.7 : 1,
+                }}
+              >
+                <CreditCard style={{ width: '16px', height: '16px' }} />
+                {processing ? 'Processing...' : 'Pay ₹20 & Start Chatting'}
+              </motion.button>
+            </div>
+          </motion.div>
         </motion.div>
-      </div>
+      )}
     </AnimatePresence>
   );
 };
