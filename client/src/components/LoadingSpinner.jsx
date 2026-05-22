@@ -1,72 +1,54 @@
 import { motion } from 'framer-motion';
-import { Globe } from 'lucide-react';
 
-const LoadingSpinner = ({ fullPage = false, text = 'Loading your adventure...' }) => {
-  const spinner = (
+const LoadingSpinner = () => (
+  <div style={{
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '50vh',
+  }}>
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
-      <div style={{ position: 'relative', width: '64px', height: '64px' }}>
-        {/* Outer rotating ring */}
+      {/* Spinner ring */}
+      <div style={{ position: 'relative', width: '48px', height: '48px' }}>
+        {/* Track */}
+        <div style={{
+          position: 'absolute', inset: 0,
+          borderRadius: '50%',
+          border: '3px solid #E2E8F0',
+        }} />
+        {/* Spinner */}
         <motion.div
-          style={{
-            position: 'absolute', inset: 0, borderRadius: '50%',
-            border: '2px solid transparent',
-            borderTopColor: '#22D3EE',
-            borderRightColor: 'rgba(139, 92, 246, 0.55)',
-          }}
           animate={{ rotate: 360 }}
-          transition={{ duration: 1.4, repeat: Infinity, ease: 'linear' }}
-        />
-        {/* Inner counter-rotating ring */}
-        <motion.div
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           style={{
-            position: 'absolute', inset: '10px', borderRadius: '50%',
-            border: '2px solid transparent',
-            borderBottomColor: '#EC4899',
-            borderLeftColor: 'rgba(6, 182, 212, 0.4)',
+            position: 'absolute', inset: 0,
+            borderRadius: '50%',
+            border: '3px solid transparent',
+            borderTopColor: '#2563EB',
+            borderRightColor: '#7C3AED',
           }}
-          animate={{ rotate: -360 }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: 'linear' }}
         />
-        {/* Center pulsing globe */}
-        <motion.div
-          style={{
-            position: 'absolute', inset: '20px', borderRadius: '50%',
-            background: 'linear-gradient(135deg, #06B6D4, #8B5CF6)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 0 24px rgba(139, 92, 246, 0.55)',
-          }}
-          animate={{ scale: [1, 1.12, 1] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <Globe style={{ width: '14px', height: '14px', color: 'white' }} />
-        </motion.div>
+        {/* Inner dot */}
+        <div style={{
+          position: 'absolute',
+          top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '8px', height: '8px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #2563EB, #7C3AED)',
+        }} />
       </div>
+      {/* Label */}
       <motion.p
-        animate={{ opacity: [0.4, 1, 0.4] }}
-        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 500, letterSpacing: '0.02em' }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3 }}
+        style={{ fontSize: '14px', color: '#64748B', fontWeight: 500 }}
       >
-        {text}
+        Loading…
       </motion.p>
     </div>
-  );
-
-  if (fullPage) {
-    return (
-      <div style={{
-        position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: 'rgba(5, 8, 22, 0.85)', backdropFilter: 'blur(8px)', zIndex: 100,
-      }}>
-        {spinner}
-      </div>
-    );
-  }
-
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '100px 0' }}>
-      {spinner}
-    </div>
-  );
-};
+  </div>
+);
 
 export default LoadingSpinner;

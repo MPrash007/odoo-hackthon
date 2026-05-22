@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Search, Globe, Eye, Heart, Sparkles, MapPin, Calendar, MessageCircle } from 'lucide-react';
+import { Users, Search, Globe, Eye, Heart, Sparkles, MapPin, Calendar } from 'lucide-react';
 import { tripService } from '../services/tripService';
 import { formatDateRange } from '../utils/formatDate';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -26,7 +26,7 @@ const CommunityPage = () => {
   if (loading) return <LoadingSpinner />;
 
   const handleLike = async (tripId) => {
-    if (!user) return; // Optional: Could show a toast saying "please login to like"
+    if (!user) return;
     try {
       const data = await tripService.toggleLike(tripId);
       setTrips(trips.map(t => t._id === tripId ? { ...t, likes: data.likes } : t));
@@ -42,9 +42,13 @@ const CommunityPage = () => {
       style={{ maxWidth: '960px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '28px', paddingBottom: '60px' }}>
 
       {/* Hero Card */}
-      <div className="gradient-border noise" style={{ position: 'relative', overflow: 'hidden', borderRadius: '24px' }}>
-        <div className="animate-float-slow" style={{ position: 'absolute', top: '-60px', right: '-40px', width: '280px', height: '280px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(168,85,247,0.20), transparent 70%)' }} />
-        <div className="animate-float" style={{ position: 'absolute', bottom: '-40px', left: '-40px', width: '220px', height: '220px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(236,72,153,0.18), transparent 70%)', animationDelay: '1s' }} />
+      <div style={{
+        position: 'relative', overflow: 'hidden', borderRadius: '24px',
+        background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.08), rgba(236, 72, 153, 0.08))',
+        border: '1px solid #E2E8F0',
+      }}>
+        <div className="animate-float-slow" style={{ position: 'absolute', top: '-60px', right: '-40px', width: '280px', height: '280px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(124, 58, 237, 0.15), transparent 70%)' }} />
+        <div className="animate-float" style={{ position: 'absolute', bottom: '-40px', left: '-40px', width: '220px', height: '220px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(236, 72, 153, 0.15), transparent 70%)', animationDelay: '1s' }} />
 
         <div style={{ position: 'relative', padding: '48px 32px', textAlign: 'center' }}>
           <motion.div
@@ -52,23 +56,23 @@ const CommunityPage = () => {
             transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
             style={{
               width: '64px', height: '64px', borderRadius: '20px',
-              background: 'linear-gradient(135deg, #A78BFA, #EC4899)',
+              background: 'linear-gradient(135deg, #7C3AED, #EC4899)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               margin: '0 auto 18px',
-              boxShadow: '0 12px 36px rgba(167, 139, 250, 0.40)',
+              boxShadow: '0 8px 24px rgba(124, 58, 237, 0.25)',
             }}>
             <Users style={{ width: '30px', height: '30px', color: 'white' }} />
           </motion.div>
-          <span className="eyebrow" style={{ color: '#F472B6' }}>
+          <span className="eyebrow" style={{ color: '#EC4899' }}>
             <Sparkles style={{ width: '11px', height: '11px' }} /> Inspiration hub
           </span>
           <h1 className="font-display" style={{
-            fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: '800', color: '#f1f5f9',
+            fontSize: 'clamp(28px, 4vw, 36px)', fontWeight: '800', color: '#111827',
             marginTop: '10px', marginBottom: '12px', letterSpacing: '-0.03em',
           }}>
             <span className="text-gradient-warm">Community</span> trips
           </h1>
-          <p style={{ color: '#94a3b8', fontSize: '14px', lineHeight: 1.65, maxWidth: '500px', margin: '0 auto' }}>
+          <p style={{ color: '#64748B', fontSize: '14px', lineHeight: 1.65, maxWidth: '500px', margin: '0 auto' }}>
             Browse itineraries shared by fellow explorers. Get inspired, copy a trip, and start your own adventure.
           </p>
         </div>
@@ -76,7 +80,7 @@ const CommunityPage = () => {
 
       {/* Search */}
       <div style={{ position: 'relative' }}>
-        <Search style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', color: '#64748b', pointerEvents: 'none' }} />
+        <Search style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', width: '18px', height: '18px', color: '#64748B', pointerEvents: 'none' }} />
         <input value={search} onChange={e => setSearch(e.target.value)} className="input-field"
           style={{ paddingLeft: '50px', padding: '16px 18px 16px 50px', borderRadius: '16px' }}
           placeholder="Search community trips..." />
@@ -91,8 +95,9 @@ const CommunityPage = () => {
             whileHover={{ y: -4 }}
             style={{
               borderRadius: '20px', overflow: 'hidden',
-              background: 'linear-gradient(160deg, rgba(31, 42, 68, 0.55), rgba(10, 14, 28, 0.85))',
-              border: '1px solid rgba(148,163,184,0.10)',
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              boxShadow: '0 1px 3px rgba(17,24,39,0.04)',
               transition: 'all 0.3s',
             }}
             className="card-hover"
@@ -104,36 +109,36 @@ const CommunityPage = () => {
                   alt={trip.title}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
-                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, transparent 60%, rgba(15,23,42,0.85) 100%)' }} />
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, transparent 60%, rgba(255,255,255,0.95) 100%)' }} />
               </div>
 
               <div style={{ flex: 1, minWidth: '260px', padding: '22px 26px', display: 'flex', flexDirection: 'column', gap: '10px', justifyContent: 'center' }}>
                 <div>
                   <h3 className="font-display" style={{
-                    fontSize: '19px', fontWeight: '700', color: '#f1f5f9', letterSpacing: '-0.01em',
+                    fontSize: '19px', fontWeight: '700', color: '#111827', letterSpacing: '-0.01em',
                   }}>{trip.title}</h3>
                   {trip.user && (
-                    <span style={{ fontSize: '12px', color: '#64748b', display: 'block', marginTop: '2px' }}>
+                    <span style={{ fontSize: '13px', color: '#64748B', display: 'block', marginTop: '2px', fontWeight: 500 }}>
                       by {trip.user.firstName} {trip.user.lastName}
                     </span>
                   )}
                 </div>
 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', fontSize: '12px', color: '#94a3b8' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', fontSize: '12px', color: '#64748B' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <Calendar style={{ width: '12px', height: '12px', color: '#22D3EE' }} />
+                    <Calendar style={{ width: '13px', height: '13px', color: '#2563EB' }} />
                     {formatDateRange(trip.startDate, trip.endDate)}
                   </span>
                   {trip.destinations?.length > 0 && (
                     <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                      <MapPin style={{ width: '12px', height: '12px', color: '#A78BFA' }} />
+                      <MapPin style={{ width: '13px', height: '13px', color: '#7C3AED' }} />
                       {trip.destinations.join(', ')}
                     </span>
                   )}
                 </div>
                 {trip.description && (
                   <p style={{
-                    fontSize: '13px', color: '#94a3b8', lineHeight: 1.55,
+                    fontSize: '13px', color: '#475569', lineHeight: 1.55,
                     display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden',
                   }}>
                     {trip.description}
@@ -145,9 +150,9 @@ const CommunityPage = () => {
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
                       padding: '8px 16px', borderRadius: '11px', fontSize: '12px', fontWeight: '600',
-                      background: 'linear-gradient(135deg, rgba(6,182,212,0.18), rgba(139,92,246,0.12))',
-                      color: '#22D3EE',
-                      border: '1px solid rgba(6,182,212,0.25)', cursor: 'pointer',
+                      background: 'rgba(37, 99, 235, 0.06)',
+                      color: '#2563EB',
+                      border: '1px solid rgba(37, 99, 235, 0.15)', cursor: 'pointer',
                     }}>
                     <Eye style={{ width: '13px', height: '13px' }} /> View Itinerary
                   </motion.button>
@@ -156,15 +161,10 @@ const CommunityPage = () => {
                     style={{
                       display: 'inline-flex', alignItems: 'center', gap: '6px',
                       padding: '8px 14px', borderRadius: '11px', fontSize: '12px', fontWeight: '600',
-                      background: (trip.likes || []).includes(user?._id) ? 'rgba(244, 114, 182, 0.15)' : 'rgba(244, 114, 182, 0.06)',
-                      color: (trip.likes || []).includes(user?._id) ? '#F472B6' : '#94a3b8',
-                      border: '1px solid rgba(244, 114, 182, 0.15)', cursor: 'pointer',
+                      background: (trip.likes || []).includes(user?._id) ? 'rgba(236, 72, 153, 0.12)' : 'rgba(100, 116, 139, 0.06)',
+                      color: (trip.likes || []).includes(user?._id) ? '#EC4899' : '#64748B',
+                      border: `1px solid ${(trip.likes || []).includes(user?._id) ? 'rgba(236, 72, 153, 0.20)' : 'rgba(100, 116, 139, 0.12)'}`, cursor: 'pointer',
                       transition: 'all 0.2s',
-                    }}
-                    onMouseEnter={e => { e.currentTarget.style.color = '#F472B6'; e.currentTarget.style.background = 'rgba(244, 114, 182, 0.15)'; }}
-                    onMouseLeave={e => { 
-                      e.currentTarget.style.color = (trip.likes || []).includes(user?._id) ? '#F472B6' : '#94a3b8'; 
-                      e.currentTarget.style.background = (trip.likes || []).includes(user?._id) ? 'rgba(244, 114, 182, 0.15)' : 'rgba(244, 114, 182, 0.06)'; 
                     }}>
                     <Heart style={{ width: '13px', height: '13px', fill: (trip.likes || []).includes(user?._id) ? 'currentColor' : 'none' }} /> 
                     {trip.likes?.length || 0} {(trip.likes?.length === 1) ? 'Like' : 'Likes'}
@@ -174,18 +174,18 @@ const CommunityPage = () => {
             </div>
           </motion.div>
         )) : (
-          <div className="glass" style={{ textAlign: 'center', padding: '70px 20px' }}>
+          <div style={{ textAlign: 'center', padding: '70px 20px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
             <div className="animate-float" style={{
               width: '70px', height: '70px', borderRadius: '20px',
-              background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.10), rgba(236, 72, 153, 0.10))',
-              border: '1px solid rgba(168, 85, 247, 0.20)',
+              background: 'rgba(124, 58, 237, 0.06)',
+              border: '1px solid rgba(124, 58, 237, 0.12)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               margin: '0 auto 18px',
             }}>
-              <Globe style={{ width: '32px', height: '32px', color: '#A78BFA' }} />
+              <Globe style={{ width: '32px', height: '32px', color: '#7C3AED' }} />
             </div>
-            <h3 className="font-display" style={{ fontSize: '20px', fontWeight: '700', color: '#f1f5f9', marginBottom: '8px' }}>No public trips yet</h3>
-            <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '22px' }}>
+            <h3 className="font-display" style={{ fontSize: '20px', fontWeight: '700', color: '#111827', marginBottom: '8px' }}>No public trips yet</h3>
+            <p style={{ color: '#64748B', fontSize: '14px', marginBottom: '22px' }}>
               Make your trips public to share them with the community!
             </p>
             <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
@@ -193,9 +193,9 @@ const CommunityPage = () => {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '8px',
                 padding: '11px 22px', borderRadius: '12px', fontSize: '13px', fontWeight: '600',
-                background: 'linear-gradient(135deg, #A78BFA, #EC4899)',
+                background: '#2563EB',
                 color: 'white', border: 'none', cursor: 'pointer',
-                boxShadow: '0 8px 24px -4px rgba(167, 139, 250, 0.40)',
+                boxShadow: '0 4px 12px rgba(37, 99, 235, 0.20)',
               }}>
               Go to My Trips
             </motion.button>

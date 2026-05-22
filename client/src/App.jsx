@@ -92,17 +92,17 @@ function App() {
         toastOptions={{
           duration: 3000,
           style: {
-            background: 'rgba(15, 19, 36, 0.95)',
-            color: '#f1f5f9',
-            border: '1px solid rgba(148, 163, 184, 0.15)',
-            borderRadius: '14px',
-            fontSize: '13px',
+            background: '#FFFFFF',
+            color: '#111827',
+            border: '1px solid #E2E8F0',
+            borderRadius: '12px',
+            fontSize: '14px',
             fontWeight: 500,
-            backdropFilter: 'blur(20px)',
-            boxShadow: '0 12px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(6, 182, 212, 0.05)',
+            fontFamily: '"Inter", system-ui, sans-serif',
+            boxShadow: '0 12px 40px rgba(17, 24, 39, 0.10), 0 4px 12px rgba(17, 24, 39, 0.05)',
           },
-          success: { iconTheme: { primary: '#22D3EE', secondary: '#0a0f1f' } },
-          error: { iconTheme: { primary: '#F472B6', secondary: '#0a0f1f' } },
+          success: { iconTheme: { primary: '#2563EB', secondary: '#FFFFFF' } },
+          error: { iconTheme: { primary: '#BA1A1A', secondary: '#FFFFFF' } },
         }}
       />
     </AuthProvider>

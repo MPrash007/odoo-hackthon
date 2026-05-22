@@ -45,9 +45,9 @@ const PackingChecklistPage = () => {
   const progress = total > 0 ? (packed / total) * 100 : 0;
   const tabStyle = (active) => ({
     padding: '8px 16px', borderRadius: '11px', fontSize: '12px', fontWeight: '600', cursor: 'pointer', whiteSpace: 'nowrap',
-    background: active ? 'linear-gradient(135deg, rgba(6,182,212,0.18), rgba(139,92,246,0.12))' : 'rgba(148,163,184,0.06)',
-    color: active ? '#22D3EE' : '#94a3b8',
-    border: `1px solid ${active ? 'rgba(6,182,212,0.30)' : 'rgba(148,163,184,0.10)'}`,
+    background: active ? 'rgba(37, 99, 235, 0.08)' : '#F8FAFC',
+    color: active ? '#2563EB' : '#64748B',
+    border: `1px solid ${active ? 'rgba(37, 99, 235, 0.20)' : '#E2E8F0'}`,
     transition: 'all 0.2s',
   });
 
@@ -60,45 +60,42 @@ const PackingChecklistPage = () => {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
         <div>
           <span className="eyebrow"><CheckSquare style={{ width: '11px', height: '11px' }} /> Packing</span>
-          <h1 className="font-display" style={{ fontSize: '32px', fontWeight: '800', color: '#f1f5f9', marginTop: '6px', letterSpacing: '-0.03em' }}>
+          <h1 className="font-display" style={{ fontSize: '32px', fontWeight: '800', color: '#111827', marginTop: '6px', letterSpacing: '-0.03em' }}>
             <span className="text-gradient">Don't forget</span> a thing
           </h1>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
           <motion.button whileTap={{ scale: 0.95 }} onClick={resetAll} title="Reset all"
-            style={{ padding: '10px', borderRadius: '11px', background: 'rgba(148, 163, 184, 0.06)', border: '1px solid rgba(148, 163, 184, 0.10)', cursor: 'pointer', color: '#94a3b8' }}>
+            style={{ padding: '10px', borderRadius: '11px', background: '#FFFFFF', border: '1px solid #E2E8F0', cursor: 'pointer', color: '#64748B', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
             <RotateCcw style={{ width: '15px', height: '15px' }} />
           </motion.button>
           <motion.button whileTap={{ scale: 0.95 }} onClick={() => window.print()} title="Print"
-            style={{ padding: '10px', borderRadius: '11px', background: 'rgba(148, 163, 184, 0.06)', border: '1px solid rgba(148, 163, 184, 0.10)', cursor: 'pointer', color: '#94a3b8' }}>
+            style={{ padding: '10px', borderRadius: '11px', background: '#FFFFFF', border: '1px solid #E2E8F0', cursor: 'pointer', color: '#64748B', boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
             <Printer style={{ width: '15px', height: '15px' }} />
           </motion.button>
         </div>
       </div>
 
       {/* Progress card */}
-      <div className="glass" style={{ padding: '20px' }}>
+      <div style={{ padding: '20px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(17,24,39,0.04)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-          <span style={{ fontSize: '13px', color: '#cbd5e1', fontWeight: 600 }}>
+          <span style={{ fontSize: '13px', color: '#475569', fontWeight: 600 }}>
             {packed} of {total} packed
           </span>
-          <span className="font-display" style={{ fontSize: '22px', fontWeight: '800', color: progress === 100 ? '#34d399' : '#22D3EE', letterSpacing: '-0.02em' }}>
+          <span className="font-display" style={{ fontSize: '22px', fontWeight: '800', color: progress === 100 ? '#059669' : '#2563EB', letterSpacing: '-0.02em' }}>
             {progress.toFixed(0)}%
           </span>
         </div>
-        <div style={{ height: '10px', borderRadius: '999px', background: 'rgba(148,163,184,0.08)', overflow: 'hidden', position: 'relative' }}>
+        <div style={{ height: '10px', borderRadius: '999px', background: '#F1F5F9', overflow: 'hidden', position: 'relative' }}>
           <motion.div
             initial={{ width: 0 }} animate={{ width: `${progress}%` }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
             style={{
               height: '100%', borderRadius: '999px',
               background: progress === 100
-                ? 'linear-gradient(90deg, #10B981, #34D399)'
-                : 'linear-gradient(90deg, #06B6D4, #8B5CF6, #EC4899)',
-              backgroundSize: '200% 100%',
-              boxShadow: '0 0 20px rgba(6, 182, 212, 0.40)',
+                ? 'linear-gradient(90deg, #059669, #10B981)'
+                : 'linear-gradient(90deg, #2563EB, #7C3AED)',
             }}
-            className="animate-shimmer"
           />
         </div>
       </div>
@@ -122,9 +119,9 @@ const PackingChecklistPage = () => {
           style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             padding: '10px 18px', borderRadius: '12px',
-            background: 'linear-gradient(135deg, #06B6D4, #8B5CF6)',
+            background: '#2563EB',
             color: 'white', border: 'none', cursor: 'pointer',
-            boxShadow: '0 6px 18px -4px rgba(6, 182, 212, 0.40)',
+            boxShadow: '0 4px 12px rgba(37, 99, 235, 0.20)',
           }}>
           <Plus style={{ width: '17px', height: '17px' }} />
         </motion.button>
@@ -139,44 +136,42 @@ const PackingChecklistPage = () => {
               style={{
                 display: 'flex', alignItems: 'center', gap: '14px',
                 padding: '14px 18px', borderRadius: '13px',
-                background: item.isPacked
-                  ? 'linear-gradient(135deg, rgba(6,182,212,0.06), rgba(139,92,246,0.04))'
-                  : 'rgba(15, 19, 36, 0.55)',
-                border: `1px solid ${item.isPacked ? 'rgba(6,182,212,0.20)' : 'rgba(148,163,184,0.08)'}`,
+                background: item.isPacked ? '#F8FAFC' : '#FFFFFF',
+                border: `1px solid ${item.isPacked ? '#E2E8F0' : '#E2E8F0'}`,
+                boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
                 transition: 'all 0.2s',
               }}>
               <motion.button whileTap={{ scale: 0.85 }} onClick={() => toggleItem(item)}
                 style={{
                   width: '22px', height: '22px', borderRadius: '7px',
-                  border: `2px solid ${item.isPacked ? 'transparent' : '#475569'}`,
-                  background: item.isPacked ? 'linear-gradient(135deg, #06B6D4, #8B5CF6)' : 'transparent',
+                  border: `2px solid ${item.isPacked ? 'transparent' : '#CBD5E1'}`,
+                  background: item.isPacked ? '#2563EB' : 'transparent',
                   cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
                   flexShrink: 0,
-                  boxShadow: item.isPacked ? '0 4px 12px rgba(6, 182, 212, 0.35)' : 'none',
                   transition: 'all 0.2s',
                 }}>
-                {item.isPacked && <span style={{ color: 'white', fontSize: '12px', fontWeight: 700 }}>✓</span>}
+                {item.isPacked && <span style={{ color: 'white', fontSize: '11px', fontWeight: 700 }}>✓</span>}
               </motion.button>
               <span style={{ fontSize: '14px' }}>{catIcons[item.category]}</span>
               <span style={{
                 flex: 1, fontSize: '13px', fontWeight: 500,
-                color: item.isPacked ? '#475569' : '#f1f5f9',
+                color: item.isPacked ? '#94A3B8' : '#111827',
                 textDecoration: item.isPacked ? 'line-through' : 'none',
                 transition: 'color 0.2s',
               }}>
                 {item.label}
               </span>
               <motion.button whileTap={{ scale: 0.85 }} whileHover={{ scale: 1.1 }} onClick={() => deleteItem(item._id)}
-                style={{ padding: '6px', background: 'transparent', border: 'none', cursor: 'pointer', color: '#475569' }}>
+                style={{ padding: '6px', background: 'transparent', border: 'none', cursor: 'pointer', color: '#94A3B8' }}>
                 <Trash2 style={{ width: '14px', height: '14px' }} />
               </motion.button>
             </motion.div>
           ))}
         </AnimatePresence>
         {filtered.length === 0 && (
-          <div className="glass" style={{ textAlign: 'center', padding: '50px 20px' }}>
-            <Sparkles style={{ width: '32px', height: '32px', color: '#475569', margin: '0 auto 12px' }} />
-            <p style={{ color: '#94a3b8', fontSize: '13px' }}>No items yet. Add some above!</p>
+          <div style={{ textAlign: 'center', padding: '50px 20px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+            <Sparkles style={{ width: '32px', height: '32px', color: '#94A3B8', margin: '0 auto 12px' }} />
+            <p style={{ color: '#64748B', fontSize: '13px' }}>No items yet. Add some above!</p>
           </div>
         )}
       </div>

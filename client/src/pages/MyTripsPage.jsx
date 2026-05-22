@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Map, Plus, Sparkles, LayoutGrid } from 'lucide-react';
+import { Search, Map, Plus, LayoutGrid } from 'lucide-react';
 import { tripService } from '../services/tripService';
 import TripCard from '../components/TripCard';
 import LoadingSpinner from '../components/LoadingSpinner';
@@ -36,18 +36,17 @@ const MyTripsPage = () => {
   if (loading) return <LoadingSpinner />;
 
   const statusMeta = {
-    ongoing: { dot: '#34d399', label: 'Ongoing', glow: 'rgba(52, 211, 153, 0.40)' },
-    upcoming: { dot: '#60a5fa', label: 'Upcoming', glow: 'rgba(96, 165, 250, 0.40)' },
-    completed: { dot: '#94a3b8', label: 'Completed', glow: 'rgba(148, 163, 184, 0.30)' },
+    ongoing: { dot: '#059669', label: 'Ongoing' },
+    upcoming: { dot: '#2563EB', label: 'Upcoming' },
+    completed: { dot: '#94A3B8', label: 'Completed' },
   };
 
   const filterPill = (active) => ({
-    padding: '8px 16px', borderRadius: '11px', fontSize: '12px', fontWeight: '600',
+    padding: '8px 16px', borderRadius: '10px', fontSize: '13px', fontWeight: '600',
     textTransform: 'capitalize', cursor: 'pointer', transition: 'all 0.2s',
-    background: active ? 'linear-gradient(135deg, rgba(6,182,212,0.18), rgba(139,92,246,0.12))' : 'rgba(148,163,184,0.06)',
-    color: active ? '#22D3EE' : '#94a3b8',
-    border: `1px solid ${active ? 'rgba(6,182,212,0.30)' : 'rgba(148,163,184,0.10)'}`,
-    boxShadow: active ? '0 4px 16px rgba(6, 182, 212, 0.18)' : 'none',
+    background: active ? 'rgba(37, 99, 235, 0.08)' : '#F8FAFC',
+    color: active ? '#2563EB' : '#64748B',
+    border: `1px solid ${active ? 'rgba(37, 99, 235, 0.20)' : '#E2E8F0'}`,
   });
 
   return (
@@ -58,34 +57,38 @@ const MyTripsPage = () => {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <span className="eyebrow"><LayoutGrid style={{ width: '11px', height: '11px' }} /> Library</span>
-          <h1 className="font-display" style={{ fontSize: '34px', fontWeight: '800', color: '#f1f5f9', letterSpacing: '-0.03em', marginTop: '6px' }}>
+          <span className="eyebrow"><LayoutGrid style={{ width: '12px', height: '12px' }} /> Library</span>
+          <h1 className="font-display" style={{ fontSize: '32px', fontWeight: '700', color: '#111827', letterSpacing: '-0.02em', marginTop: '8px' }}>
             My <span className="text-gradient">Trips</span>
           </h1>
-          <p style={{ color: '#94a3b8', fontSize: '14px', marginTop: '6px' }}>
+          <p style={{ color: '#64748B', fontSize: '14px', marginTop: '6px' }}>
             {trips.length} {trips.length === 1 ? 'trip' : 'trips'} total · {grouped.ongoing.length} ongoing
           </p>
         </div>
-        <motion.button whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }} onClick={() => navigate('/trips/new')}
+        <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={() => navigate('/trips/new')}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
-            padding: '12px 22px', borderRadius: '13px',
-            background: 'linear-gradient(135deg, #06B6D4, #8B5CF6)',
-            color: 'white', fontSize: '13px', fontWeight: '700', border: 'none', cursor: 'pointer',
-            boxShadow: '0 8px 24px -4px rgba(6, 182, 212, 0.40)',
+            padding: '12px 22px', borderRadius: '14px',
+            background: '#2563EB', color: 'white',
+            fontSize: '14px', fontWeight: '600', border: 'none', cursor: 'pointer',
+            boxShadow: '0 6px 20px rgba(37, 99, 235, 0.25)',
           }}>
           <Plus style={{ width: '15px', height: '15px' }} /> New Trip
         </motion.button>
       </div>
 
       {/* Filters */}
-      <div className="glass" style={{ padding: '14px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+      <div style={{
+        padding: '14px', display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center',
+        background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '16px',
+        boxShadow: '0 1px 3px rgba(17, 24, 39, 0.04)',
+      }}>
         <div style={{ position: 'relative', flex: 1, minWidth: '220px' }}>
-          <Search style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', width: '15px', height: '15px', color: '#64748b', pointerEvents: 'none' }} />
+          <Search style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)', width: '15px', height: '15px', color: '#94A3B8', pointerEvents: 'none' }} />
           <input value={search} onChange={e => setSearch(e.target.value)} className="input-field input-with-icon" placeholder="Search trips by title..." />
         </div>
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-          {['all','ongoing','upcoming','completed'].map(s => (
+          {['all', 'ongoing', 'upcoming', 'completed'].map(s => (
             <button key={s} onClick={() => setFilterStatus(s)} style={filterPill(filterStatus === s)}>
               {s}
             </button>
@@ -96,34 +99,35 @@ const MyTripsPage = () => {
       {filtered.length === 0 ? (
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}
-          className="glass"
-          style={{ textAlign: 'center', padding: '80px 20px' }}
+          style={{
+            textAlign: 'center', padding: '80px 20px',
+            background: '#FFFFFF', border: '1px solid #E2E8F0', borderRadius: '16px',
+          }}
         >
           <div className="animate-float" style={{
             width: '70px', height: '70px', borderRadius: '20px',
-            background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.10), rgba(139, 92, 246, 0.10))',
-            border: '1px solid rgba(6, 182, 212, 0.20)',
+            background: 'rgba(37, 99, 235, 0.06)',
+            border: '1px solid rgba(37, 99, 235, 0.12)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             margin: '0 auto 18px',
           }}>
-            <Map style={{ width: '32px', height: '32px', color: '#22D3EE' }} />
+            <Map style={{ width: '32px', height: '32px', color: '#2563EB' }} />
           </div>
-          <h3 className="font-display" style={{ fontSize: '20px', fontWeight: '700', color: '#f1f5f9', marginBottom: '8px' }}>No trips found</h3>
-          <p style={{ color: '#94a3b8', fontSize: '14px' }}>Try adjusting your filters or create a new trip.</p>
+          <h3 className="font-display" style={{ fontSize: '20px', fontWeight: '600', color: '#111827', marginBottom: '8px' }}>No trips found</h3>
+          <p style={{ color: '#64748B', fontSize: '14px' }}>Try adjusting your filters or create a new trip.</p>
         </motion.div>
       ) : (
         Object.entries(grouped).map(([status, items]) => items.length > 0 && (
           <section key={status}>
             <h2 style={{
-              fontSize: '14px', fontWeight: '700', color: statusMeta[status].dot, marginBottom: '16px',
-              display: 'flex', alignItems: 'center', gap: '10px', textTransform: 'uppercase', letterSpacing: '0.10em',
+              fontSize: '13px', fontWeight: '700', color: statusMeta[status].dot, marginBottom: '16px',
+              display: 'flex', alignItems: 'center', gap: '10px', textTransform: 'uppercase', letterSpacing: '0.08em',
             }}>
               <span style={{
-                width: '9px', height: '9px', borderRadius: '50%',
+                width: '8px', height: '8px', borderRadius: '50%',
                 background: statusMeta[status].dot,
-                boxShadow: `0 0 10px ${statusMeta[status].glow}`,
               }} />
-              {statusMeta[status].label} <span style={{ color: '#475569', fontWeight: 500 }}>· {items.length}</span>
+              {statusMeta[status].label} <span style={{ color: '#94A3B8', fontWeight: 500 }}>· {items.length}</span>
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
               {items.map((trip, i) => (

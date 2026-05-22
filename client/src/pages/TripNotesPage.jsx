@@ -48,9 +48,9 @@ const TripNotesPage = () => {
 
   const filterPill = (active) => ({
     padding: '7px 14px', borderRadius: '10px', fontSize: '12px', fontWeight: '600', cursor: 'pointer',
-    background: active ? 'linear-gradient(135deg, rgba(6,182,212,0.18), rgba(139,92,246,0.12))' : 'rgba(148,163,184,0.06)',
-    color: active ? '#22D3EE' : '#94a3b8',
-    border: `1px solid ${active ? 'rgba(6,182,212,0.30)' : 'rgba(148,163,184,0.10)'}`,
+    background: active ? 'rgba(37, 99, 235, 0.08)' : '#F8FAFC',
+    color: active ? '#2563EB' : '#64748B',
+    border: `1px solid ${active ? 'rgba(37, 99, 235, 0.20)' : '#E2E8F0'}`,
     transition: 'all 0.2s', textTransform: 'capitalize',
   });
 
@@ -61,7 +61,7 @@ const TripNotesPage = () => {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
         <div>
           <span className="eyebrow"><FileText style={{ width: '11px', height: '11px' }} /> Journal</span>
-          <h1 className="font-display" style={{ fontSize: '32px', fontWeight: '800', color: '#f1f5f9', marginTop: '6px', letterSpacing: '-0.03em' }}>
+          <h1 className="font-display" style={{ fontSize: '32px', fontWeight: '800', color: '#111827', marginTop: '6px', letterSpacing: '-0.03em' }}>
             Trip <span className="text-gradient">Notes</span>
           </h1>
         </div>
@@ -69,10 +69,10 @@ const TripNotesPage = () => {
           style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
             padding: '11px 20px', borderRadius: '12px',
-            background: 'linear-gradient(135deg, #06B6D4, #8B5CF6)',
+            background: '#2563EB',
             color: 'white', fontSize: '13px', fontWeight: '700',
             border: 'none', cursor: 'pointer',
-            boxShadow: '0 8px 24px -4px rgba(6, 182, 212, 0.40)',
+            boxShadow: '0 4px 14px rgba(37, 99, 235, 0.25)',
           }}>
           <Plus style={{ width: '15px', height: '15px' }} /> New Note
         </motion.button>
@@ -93,35 +93,34 @@ const TripNotesPage = () => {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
               transition={{ delay: i * 0.04 }}
               whileHover={{ y: -3 }}
-              className="glass card-hover"
-              style={{ padding: '20px', position: 'relative' }}
+              style={{ padding: '20px', position: 'relative', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(17,24,39,0.04)' }}
+              className="card-hover"
             >
               <div style={{
                 position: 'absolute', top: '20px', bottom: '20px', left: 0, width: '3px',
                 borderRadius: '0 4px 4px 0',
-                background: 'linear-gradient(180deg, #A78BFA, #EC4899)',
-                boxShadow: '0 0 12px rgba(167, 139, 250, 0.40)',
+                background: 'linear-gradient(180deg, #7C3AED, #2563EB)',
               }} />
               <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
                 <div style={{ flex: 1 }}>
-                  <h3 className="font-display" style={{ fontSize: '16px', fontWeight: '700', color: '#f1f5f9', letterSpacing: '-0.01em' }}>{note.title}</h3>
-                  <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{timeAgo(note.createdAt)}</p>
+                  <h3 className="font-display" style={{ fontSize: '16px', fontWeight: '700', color: '#111827', letterSpacing: '-0.01em' }}>{note.title}</h3>
+                  <p style={{ fontSize: '11px', color: '#64748B', marginTop: '2px' }}>{timeAgo(note.createdAt)}</p>
                 </div>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <motion.button whileTap={{ scale: 0.9 }} onClick={() => openEdit(note)}
-                    style={{ padding: '7px', borderRadius: '9px', background: 'rgba(148, 163, 184, 0.06)', border: '1px solid rgba(148, 163, 184, 0.10)', cursor: 'pointer', color: '#94a3b8' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#22D3EE'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
+                    style={{ padding: '7px', borderRadius: '9px', background: '#F1F5F9', border: '1px solid #E2E8F0', cursor: 'pointer', color: '#64748B' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#2563EB'} onMouseLeave={e => e.currentTarget.style.color = '#64748B'}>
                     <Edit style={{ width: '13px', height: '13px' }} />
                   </motion.button>
                   <motion.button whileTap={{ scale: 0.9 }} onClick={() => handleDelete(note._id)}
-                    style={{ padding: '7px', borderRadius: '9px', background: 'rgba(248, 113, 113, 0.06)', border: '1px solid rgba(248, 113, 113, 0.12)', cursor: 'pointer', color: '#94a3b8' }}
-                    onMouseEnter={e => e.currentTarget.style.color = '#f87171'} onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
+                    style={{ padding: '7px', borderRadius: '9px', background: 'rgba(186, 26, 26, 0.04)', border: '1px solid rgba(186, 26, 26, 0.10)', cursor: 'pointer', color: '#94A3B8' }}
+                    onMouseEnter={e => e.currentTarget.style.color = '#BA1A1A'} onMouseLeave={e => e.currentTarget.style.color = '#94A3B8'}>
                     <Trash2 style={{ width: '13px', height: '13px' }} />
                   </motion.button>
                 </div>
               </div>
               <p style={{
-                fontSize: '13px', color: '#cbd5e1', lineHeight: 1.6, marginTop: '10px',
+                fontSize: '13px', color: '#475569', lineHeight: 1.6, marginTop: '10px',
                 display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden',
               }}>
                 {note.content}
@@ -131,8 +130,8 @@ const TripNotesPage = () => {
                   {note.day && (
                     <span style={{
                       padding: '4px 10px', borderRadius: '999px',
-                      background: 'rgba(96, 165, 250, 0.10)', border: '1px solid rgba(96, 165, 250, 0.20)',
-                      color: '#60A5FA', fontSize: '11px', fontWeight: 600,
+                      background: 'rgba(37, 99, 235, 0.08)', border: '1px solid rgba(37, 99, 235, 0.15)',
+                      color: '#2563EB', fontSize: '11px', fontWeight: 600,
                       display: 'flex', alignItems: 'center', gap: '4px',
                     }}>
                       <Calendar style={{ width: '11px', height: '11px' }} /> {note.day}
@@ -141,8 +140,8 @@ const TripNotesPage = () => {
                   {note.stop && (
                     <span style={{
                       padding: '4px 10px', borderRadius: '999px',
-                      background: 'rgba(167, 139, 250, 0.10)', border: '1px solid rgba(167, 139, 250, 0.20)',
-                      color: '#A78BFA', fontSize: '11px', fontWeight: 600,
+                      background: 'rgba(124, 58, 237, 0.08)', border: '1px solid rgba(124, 58, 237, 0.15)',
+                      color: '#7C3AED', fontSize: '11px', fontWeight: 600,
                       display: 'flex', alignItems: 'center', gap: '4px',
                     }}>
                       <MapPin style={{ width: '11px', height: '11px' }} /> {note.stop}
@@ -154,10 +153,10 @@ const TripNotesPage = () => {
           ))}
         </AnimatePresence>
         {filtered.length === 0 && (
-          <div className="glass" style={{ textAlign: 'center', padding: '60px 20px' }}>
-            <Sparkles style={{ width: '32px', height: '32px', color: '#475569', margin: '0 auto 14px' }} />
-            <h3 className="font-display" style={{ fontSize: '17px', fontWeight: '700', color: '#cbd5e1', marginBottom: '6px' }}>No notes yet</h3>
-            <p style={{ color: '#94a3b8', fontSize: '13px' }}>Start capturing your travel memories</p>
+          <div style={{ textAlign: 'center', padding: '60px 20px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0' }}>
+            <Sparkles style={{ width: '32px', height: '32px', color: '#94A3B8', margin: '0 auto 14px' }} />
+            <h3 className="font-display" style={{ fontSize: '17px', fontWeight: '700', color: '#111827', marginBottom: '6px' }}>No notes yet</h3>
+            <p style={{ color: '#64748B', fontSize: '13px' }}>Start capturing your travel memories</p>
           </div>
         )}
       </div>

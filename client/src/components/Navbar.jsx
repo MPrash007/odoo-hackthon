@@ -59,10 +59,10 @@ const Navbar = () => {
       transition={{ duration: 0.5, ease: 'easeOut' }}
       style={{
         position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
-        background: scrolled ? 'rgba(5, 8, 22, 0.75)' : 'rgba(5, 8, 22, 0.40)',
+        background: scrolled ? 'rgba(255, 255, 255, 0.88)' : 'rgba(248, 250, 252, 0.60)',
         backdropFilter: 'blur(20px) saturate(140%)',
         WebkitBackdropFilter: 'blur(20px) saturate(140%)',
-        borderBottom: scrolled ? '1px solid rgba(148, 163, 184, 0.10)' : '1px solid transparent',
+        borderBottom: scrolled ? '1px solid #E2E8F0' : '1px solid transparent',
         transition: 'background 0.3s ease, border-color 0.3s ease',
       }}
     >
@@ -71,37 +71,32 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
             <motion.div
-              whileHover={{ rotate: 12, scale: 1.05 }}
+              whileHover={{ rotate: 8, scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 300 }}
               style={{
                 position: 'relative',
                 width: '38px', height: '38px', borderRadius: '12px',
                 overflow: 'hidden',
-                boxShadow: '0 4px 14px rgba(6, 182, 212, 0.40), 0 4px 14px rgba(139, 92, 246, 0.20)',
+                boxShadow: '0 4px 14px rgba(37, 99, 235, 0.20)',
               }}
             >
               <img src={logoSvg} alt="Traveloop" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <span style={{
-                position: 'absolute', top: '-2px', right: '-2px',
-                width: '8px', height: '8px', borderRadius: '50%',
-                background: '#22D3EE',
-                boxShadow: '0 0 10px rgba(34, 211, 238, 0.8)',
-              }} className="animate-pulse-glow" />
             </motion.div>
             <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.1 }}>
-              <span className="font-display animate-gradient-text" style={{
-                fontSize: '20px', fontWeight: '800', letterSpacing: '-0.02em',
+              <span className="font-display" style={{
+                fontSize: '20px', fontWeight: '700', letterSpacing: '-0.02em',
+                color: '#111827',
               }}>
                 Traveloop
               </span>
-              <span style={{ fontSize: '9px', color: '#64748b', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600 }}>
+              <span style={{ fontSize: '9px', color: '#64748B', letterSpacing: '0.14em', textTransform: 'uppercase', fontWeight: 500 }}>
                 Plan · Explore · Share
               </span>
             </div>
           </Link>
 
           {/* Desktop Nav */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }} className="hidden md:flex">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2px' }} className="hidden md:flex">
             {navLinks.map(link => {
               const Icon = link.icon;
               const isActive = isActiveLink(link.path);
@@ -117,11 +112,10 @@ const Navbar = () => {
                     padding: '9px 16px', borderRadius: '12px',
                     fontSize: '13px', fontWeight: '500',
                     textDecoration: 'none', transition: 'all 0.25s ease',
-                    color: isActive ? '#22D3EE' : (isAiLink ? '#67e8f9' : '#94a3b8'),
-                    ...(isAiLink && !isActive ? { textShadow: '0 0 8px rgba(6, 182, 212, 0.4)' } : {})
+                    color: isActive ? '#2563EB' : (isAiLink ? '#7C3AED' : '#64748B'),
                   }}
-                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = isAiLink ? '#22D3EE' : '#e2e8f0'; }}
-                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = isAiLink ? '#67e8f9' : '#94a3b8'; }}
+                  onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = isAiLink ? '#7C3AED' : '#111827'; e.currentTarget.style.background = '#F1F5F9'; }}
+                  onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = isAiLink ? '#7C3AED' : '#64748B'; e.currentTarget.style.background = 'transparent'; }}
                 >
                   {isActive && (
                     <motion.span
@@ -129,14 +123,13 @@ const Navbar = () => {
                       transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                       style={{
                         position: 'absolute', inset: 0,
-                        background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.18), rgba(139, 92, 246, 0.18))',
-                        border: '1px solid rgba(6, 182, 212, 0.30)',
+                        background: 'rgba(37, 99, 235, 0.08)',
+                        border: '1px solid rgba(37, 99, 235, 0.15)',
                         borderRadius: '12px',
-                        boxShadow: '0 4px 16px rgba(6, 182, 212, 0.20)',
                       }}
                     />
                   )}
-                  <Icon style={{ width: '15px', height: '15px', position: 'relative', zIndex: 1, ...(isAiLink ? { color: '#06B6D4' } : {}) }} />
+                  <Icon style={{ width: '15px', height: '15px', position: 'relative', zIndex: 1 }} />
                   <span style={{ position: 'relative', zIndex: 1 }}>{link.label}</span>
                 </Link>
               );
@@ -153,10 +146,10 @@ const Navbar = () => {
               style={{
                 display: 'flex', alignItems: 'center', gap: '6px',
                 padding: '8px 14px', borderRadius: '12px',
-                background: 'linear-gradient(135deg, #0891B2, #06B6D4, #8B5CF6)',
+                background: '#2563EB',
                 color: 'white', fontSize: '12px', fontWeight: '600',
                 border: 'none', cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(6, 182, 212, 0.35)',
+                boxShadow: '0 4px 14px rgba(37, 99, 235, 0.25)',
               }}
             >
               <Sparkles style={{ width: '13px', height: '13px' }} /> New Trip
@@ -165,17 +158,17 @@ const Navbar = () => {
             {/* Notifications */}
             <button style={{
               position: 'relative', padding: '9px', borderRadius: '12px',
-              background: 'rgba(148, 163, 184, 0.06)', border: '1px solid rgba(148, 163, 184, 0.08)',
-              cursor: 'pointer', color: '#94a3b8', transition: 'all 0.2s',
+              background: 'transparent', border: '1px solid transparent',
+              cursor: 'pointer', color: '#64748B', transition: 'all 0.2s',
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(148, 163, 184, 0.12)'; e.currentTarget.style.color = '#e2e8f0'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(148, 163, 184, 0.06)'; e.currentTarget.style.color = '#94a3b8'; }}>
+            onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; e.currentTarget.style.color = '#111827'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#64748B'; }}>
               <Bell style={{ width: '16px', height: '16px' }} />
               <span style={{
                 position: 'absolute', top: '7px', right: '7px',
                 width: '7px', height: '7px', borderRadius: '50%',
-                background: '#EC4899',
-                boxShadow: '0 0 8px rgba(236, 72, 153, 0.8)',
+                background: '#2563EB',
+                boxShadow: '0 0 6px rgba(37, 99, 235, 0.6)',
               }} />
             </button>
 
@@ -187,23 +180,22 @@ const Navbar = () => {
                 style={{
                   display: 'flex', alignItems: 'center', gap: '8px',
                   padding: '4px 10px 4px 4px', borderRadius: '999px',
-                  background: 'rgba(148, 163, 184, 0.06)',
-                  border: '1px solid rgba(148, 163, 184, 0.08)',
+                  background: 'transparent',
+                  border: '1px solid #E2E8F0',
                   cursor: 'pointer', transition: 'all 0.2s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'rgba(148, 163, 184, 0.12)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'rgba(148, 163, 184, 0.06)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = '#F1F5F9'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
               >
                 <div style={{
                   width: '30px', height: '30px', borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #06B6D4, #8B5CF6)',
+                  background: 'linear-gradient(135deg, #2563EB, #7C3AED)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: '11px', fontWeight: '700', color: 'white',
-                  boxShadow: '0 2px 8px rgba(139, 92, 246, 0.30)',
                 }}>
-                  {user.firstName?.[0]}{user.lastName?.[0]}
+                  {(user.firstName?.[0] || '').toUpperCase()}{(user.lastName?.[0] || '').toUpperCase()}
                 </div>
-                <span style={{ fontSize: '12px', fontWeight: '600', color: '#e2e8f0' }} className="hidden sm:block">
+                <span style={{ fontSize: '13px', fontWeight: '600', color: '#111827' }} className="hidden sm:block">
                   {user.firstName}
                 </span>
               </motion.button>
@@ -218,22 +210,21 @@ const Navbar = () => {
                     style={{
                       position: 'absolute', right: 0, top: '100%', marginTop: '12px',
                       width: '230px', borderRadius: '16px', overflow: 'hidden',
-                      background: 'rgba(10, 14, 28, 0.92)',
-                      border: '1px solid rgba(148, 163, 184, 0.12)',
-                      backdropFilter: 'blur(28px) saturate(160%)',
-                      boxShadow: '0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(6, 182, 212, 0.04)',
+                      background: '#FFFFFF',
+                      border: '1px solid #E2E8F0',
+                      boxShadow: '0 20px 60px rgba(17, 24, 39, 0.12), 0 8px 20px rgba(17, 24, 39, 0.06)',
                     }}
                   >
                     {/* Header */}
                     <div style={{
                       padding: '16px',
-                      background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(139, 92, 246, 0.08))',
-                      borderBottom: '1px solid rgba(148, 163, 184, 0.08)',
+                      background: '#F8FAFC',
+                      borderBottom: '1px solid #E2E8F0',
                     }}>
-                      <p style={{ fontSize: '13px', fontWeight: '700', color: '#f1f5f9' }}>
+                      <p style={{ fontSize: '14px', fontWeight: '600', color: '#111827' }}>
                         {user.firstName} {user.lastName}
                       </p>
-                      <p style={{ fontSize: '11px', color: '#64748b', marginTop: '2px' }}>{user.email}</p>
+                      <p style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>{user.email}</p>
                     </div>
                     <div style={{ padding: '6px' }}>
                       <Link to="/profile" style={menuItemStyle}>
@@ -245,7 +236,7 @@ const Navbar = () => {
                         </Link>
                       )}
                       <div className="divider" style={{ margin: '6px 0' }} />
-                      <button onClick={handleLogout} style={{ ...menuItemStyle, color: '#f87171', width: '100%', background: 'transparent', border: 'none', textAlign: 'left' }}>
+                      <button onClick={handleLogout} style={{ ...menuItemStyle, color: '#DC2626', width: '100%', background: 'transparent', border: 'none', textAlign: 'left' }}>
                         <LogOut style={{ width: '15px', height: '15px' }} /> Logout
                       </button>
                     </div>
@@ -259,9 +250,9 @@ const Navbar = () => {
               className="md:hidden"
               style={{
                 padding: '9px', borderRadius: '12px',
-                background: 'rgba(148, 163, 184, 0.06)',
-                border: '1px solid rgba(148, 163, 184, 0.08)',
-                cursor: 'pointer', color: '#e2e8f0',
+                background: 'transparent',
+                border: '1px solid #E2E8F0',
+                cursor: 'pointer', color: '#111827',
               }}>
               {mobileOpen ? <X style={{ width: '18px', height: '18px' }} /> : <Menu style={{ width: '18px', height: '18px' }} />}
             </button>
@@ -278,9 +269,9 @@ const Navbar = () => {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden"
             style={{
-              borderTop: '1px solid rgba(148, 163, 184, 0.08)',
+              borderTop: '1px solid #E2E8F0',
               padding: '12px 16px',
-              background: 'rgba(5, 8, 22, 0.85)',
+              background: 'rgba(255, 255, 255, 0.95)',
               backdropFilter: 'blur(20px)',
             }}
           >
@@ -297,11 +288,9 @@ const Navbar = () => {
                       display: 'flex', alignItems: 'center', gap: '12px',
                       padding: '12px 14px', borderRadius: '12px',
                       fontSize: '14px', fontWeight: '500', textDecoration: 'none',
-                      color: isActive ? '#22D3EE' : '#cbd5e1',
-                      background: isActive
-                        ? 'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(139,92,246,0.10))'
-                        : 'transparent',
-                      border: `1px solid ${isActive ? 'rgba(6,182,212,0.25)' : 'transparent'}`,
+                      color: isActive ? '#2563EB' : '#374151',
+                      background: isActive ? 'rgba(37, 99, 235, 0.06)' : 'transparent',
+                      border: `1px solid ${isActive ? 'rgba(37, 99, 235, 0.15)' : 'transparent'}`,
                       marginBottom: '4px',
                     }}>
                     <Icon style={{ width: '17px', height: '17px' }} /> {link.label}
@@ -323,7 +312,7 @@ const menuItemStyle = {
   padding: '10px 12px',
   fontSize: '13px',
   fontWeight: 500,
-  color: '#cbd5e1',
+  color: '#374151',
   textDecoration: 'none',
   borderRadius: '10px',
   cursor: 'pointer',

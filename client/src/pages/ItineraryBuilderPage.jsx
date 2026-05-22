@@ -65,24 +65,24 @@ const ItineraryBuilderPage = () => {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
         <div>
-          <span className="eyebrow"><ListChecks style={{ width: '11px', height: '11px' }} /> Builder</span>
-          <h1 className="font-display" style={{ fontSize: '30px', fontWeight: '800', color: '#f1f5f9', marginTop: '6px', letterSpacing: '-0.03em' }}>
+          <span className="eyebrow"><ListChecks style={{ width: '12px', height: '12px' }} /> Builder</span>
+          <h1 className="font-display" style={{ fontSize: '28px', fontWeight: '700', color: '#111827', marginTop: '8px', letterSpacing: '-0.02em' }}>
             {trip?.title || 'Itinerary Builder'}
           </h1>
-          <p style={{ color: '#94a3b8', fontSize: '13px', marginTop: '6px' }}>
-            Design each phase of your trip with days and activities
+          <p style={{ color: '#64748B', fontSize: '14px', marginTop: '6px' }}>
+            Design each day of your trip with activities
           </p>
         </div>
         <motion.button
-          whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+          whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
           onClick={handleSave} disabled={saving}
           style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
-            padding: '12px 22px', borderRadius: '13px',
-            background: 'linear-gradient(135deg, #06B6D4, #8B5CF6)',
-            color: 'white', fontWeight: '700', fontSize: '13px',
+            padding: '12px 22px', borderRadius: '14px',
+            background: '#2563EB', color: 'white',
+            fontWeight: '600', fontSize: '14px',
             border: 'none', cursor: 'pointer',
-            boxShadow: '0 8px 24px -4px rgba(6, 182, 212, 0.45)',
+            boxShadow: '0 6px 20px rgba(37, 99, 235, 0.25)',
             opacity: saving ? 0.6 : 1,
           }}
         >
@@ -97,15 +97,21 @@ const ItineraryBuilderPage = () => {
             key={sIdx} layout
             initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
             transition={{ delay: sIdx * 0.06 }}
-            className="glass"
-            style={{ padding: '26px', display: 'flex', flexDirection: 'column', gap: '18px', position: 'relative' }}
+            style={{
+              padding: '24px',
+              display: 'flex', flexDirection: 'column', gap: '18px',
+              position: 'relative',
+              background: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderRadius: '16px',
+              boxShadow: '0 1px 3px rgba(17, 24, 39, 0.04)',
+            }}
           >
             {/* Side accent */}
             <div style={{
               position: 'absolute', top: '20px', bottom: '20px', left: 0, width: '3px',
               borderRadius: '0 4px 4px 0',
-              background: 'linear-gradient(180deg, #22D3EE, #8B5CF6)',
-              boxShadow: '0 0 16px rgba(6, 182, 212, 0.40)',
+              background: 'linear-gradient(180deg, #2563EB, #7C3AED)',
             }} />
 
             {/* Title row */}
@@ -114,24 +120,24 @@ const ItineraryBuilderPage = () => {
                 <div style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   padding: '6px', borderRadius: '8px',
-                  background: 'rgba(148, 163, 184, 0.06)', border: '1px solid rgba(148, 163, 184, 0.10)',
-                  color: '#64748b', cursor: 'grab',
+                  background: '#F1F5F9', border: '1px solid #E2E8F0',
+                  color: '#94A3B8', cursor: 'grab',
                 }}>
                   <GripVertical style={{ width: '14px', height: '14px' }} />
                 </div>
                 <span style={{
                   display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
                   width: '28px', height: '28px', borderRadius: '10px',
-                  background: 'linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(139, 92, 246, 0.15))',
-                  color: '#22D3EE', fontWeight: 700, fontSize: '12px',
-                  border: '1px solid rgba(6, 182, 212, 0.20)',
+                  background: 'rgba(37, 99, 235, 0.08)',
+                  color: '#2563EB', fontWeight: 700, fontSize: '12px',
+                  border: '1px solid rgba(37, 99, 235, 0.15)',
                   flexShrink: 0,
                 }}>{sIdx + 1}</span>
                 <input value={section.title} onChange={e => updateSection(sIdx, 'title', e.target.value)}
                   className="font-display"
                   style={{
                     background: 'transparent', border: 'none', outline: 'none',
-                    color: '#f1f5f9', fontSize: '20px', fontWeight: '700',
+                    color: '#111827', fontSize: '18px', fontWeight: '600',
                     width: '100%', letterSpacing: '-0.01em',
                   }}
                   placeholder="Day Title (e.g. Day 1 - Arrival)"
@@ -142,11 +148,11 @@ const ItineraryBuilderPage = () => {
                 onClick={() => removeSection(sIdx)}
                 style={{
                   padding: '8px', borderRadius: '10px',
-                  background: 'rgba(248, 113, 113, 0.06)', border: '1px solid rgba(248, 113, 113, 0.15)',
-                  cursor: 'pointer', color: '#94a3b8',
+                  background: 'rgba(220, 38, 38, 0.04)', border: '1px solid rgba(220, 38, 38, 0.12)',
+                  cursor: 'pointer', color: '#94A3B8',
                 }}
-                onMouseEnter={e => e.currentTarget.style.color = '#f87171'}
-                onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}>
+                onMouseEnter={e => e.currentTarget.style.color = '#DC2626'}
+                onMouseLeave={e => e.currentTarget.style.color = '#94A3B8'}>
                 <Trash2 style={{ width: '14px', height: '14px' }} />
               </motion.button>
             </div>
@@ -156,14 +162,14 @@ const ItineraryBuilderPage = () => {
 
             <div style={{ display: 'flex', gap: '12px' }}>
               <div style={{ maxWidth: '200px' }}>
-                <label style={miniLabel}><DollarSign style={{ width: '11px', height: '11px', display: 'inline', marginRight: '5px', color: '#34d399' }} />Daily Budget (₹)</label>
+                <label style={miniLabel}><DollarSign style={{ width: '12px', height: '12px', display: 'inline', marginRight: '5px', color: '#059669' }} />Daily Budget (₹)</label>
                 <input type="number" value={section.budget} onChange={e => updateSection(sIdx, 'budget', Number(e.target.value))} className="input-field" placeholder="0" />
               </div>
             </div>
 
             {/* Activities */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <h4 style={{ fontSize: '12px', fontWeight: '700', color: '#94a3b8', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+              <h4 style={{ fontSize: '12px', fontWeight: '700', color: '#94A3B8', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
                 Activities ({section.activities.length})
               </h4>
               <AnimatePresence>
@@ -184,10 +190,10 @@ const ItineraryBuilderPage = () => {
                       <option value="sightseeing">Sightseeing</option>
                     </select>
                     <input type="number" value={act.cost} onChange={e => updateActivity(sIdx, aIdx, 'cost', Number(e.target.value))}
-                      className="input-field" style={{ width: '100px' }} placeholder="$" />
+                      className="input-field" style={{ width: '100px' }} placeholder="₹" />
                     <motion.button whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
                       onClick={() => removeActivity(sIdx, aIdx)}
-                      style={{ padding: '8px', borderRadius: '10px', background: 'rgba(248, 113, 113, 0.06)', border: '1px solid rgba(248, 113, 113, 0.12)', cursor: 'pointer', color: '#94a3b8' }}>
+                      style={{ padding: '8px', borderRadius: '10px', background: 'rgba(220, 38, 38, 0.04)', border: '1px solid rgba(220, 38, 38, 0.10)', cursor: 'pointer', color: '#94A3B8' }}>
                       <Trash2 style={{ width: '13px', height: '13px' }} />
                     </motion.button>
                   </motion.div>
@@ -197,7 +203,7 @@ const ItineraryBuilderPage = () => {
                 onClick={() => addActivity(sIdx)}
                 style={{
                   display: 'flex', alignItems: 'center', gap: '6px',
-                  fontSize: '12px', color: '#22D3EE', fontWeight: 600,
+                  fontSize: '13px', color: '#2563EB', fontWeight: 600,
                   background: 'none', border: 'none', cursor: 'pointer', padding: '6px 0',
                   width: 'fit-content',
                 }}>
@@ -212,20 +218,20 @@ const ItineraryBuilderPage = () => {
         onClick={addSection}
         style={{
           width: '100%', padding: '18px', borderRadius: '16px',
-          border: '2px dashed rgba(148, 163, 184, 0.18)', background: 'rgba(15, 19, 36, 0.30)',
-          color: '#94a3b8', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+          border: '2px dashed #E2E8F0', background: '#FAFBFC',
+          color: '#94A3B8', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
           transition: 'all 0.25s ease',
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.borderColor = 'rgba(6, 182, 212, 0.40)';
-          e.currentTarget.style.background = 'rgba(6, 182, 212, 0.05)';
-          e.currentTarget.style.color = '#22D3EE';
+          e.currentTarget.style.borderColor = 'rgba(37, 99, 235, 0.30)';
+          e.currentTarget.style.background = 'rgba(37, 99, 235, 0.02)';
+          e.currentTarget.style.color = '#2563EB';
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.borderColor = 'rgba(148, 163, 184, 0.18)';
-          e.currentTarget.style.background = 'rgba(15, 19, 36, 0.30)';
-          e.currentTarget.style.color = '#94a3b8';
+          e.currentTarget.style.borderColor = '#E2E8F0';
+          e.currentTarget.style.background = '#FAFBFC';
+          e.currentTarget.style.color = '#94A3B8';
         }}
       >
         <Sparkles style={{ width: '15px', height: '15px' }} /> Add another day
@@ -234,6 +240,6 @@ const ItineraryBuilderPage = () => {
   );
 };
 
-const miniLabel = { fontSize: '11px', color: '#94a3b8', marginBottom: '5px', display: 'block', fontWeight: 600 };
+const miniLabel = { fontSize: '12px', color: '#64748B', marginBottom: '6px', display: 'block', fontWeight: 600 };
 
 export default ItineraryBuilderPage;
