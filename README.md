@@ -167,5 +167,5 @@ This project is licensed under the **MIT License**.
 
 ## 👤 Author
 
-**Prashant Pathak**  
+**Prakash Gupta**  
 Built with ❤️ for the Odoo Hackathon
