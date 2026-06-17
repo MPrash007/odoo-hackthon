@@ -104,5 +104,5 @@ server.listen(PORT, () => {
   console.log(`🚀 Traveloop server running on port ${PORT}`);
   
   // Start the cron job to keep the server awake on Render
-  pingServer();
+  // pingServer();
 });
